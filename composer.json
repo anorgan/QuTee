@@ -1,0 +1,15 @@
+{
+    "minimum-stability": "dev",
+    "require": {
+        "silex/silex": "1.0.*",
+        "monolog/monolog": ">=1.0.0,<1.2-dev",
+        "swiftmailer/swiftmailer": ">=4.1.2,<4.2-dev",
+        "doctrine/dbal": "2.2.*"
+    },
+
+    "autoload": {
+        "psr-0": {
+            "Qutee": "src/"
+        }
+    }
+}

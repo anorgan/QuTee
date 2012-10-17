@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<phpunit bootstrap="tests/bootstrap.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         stopOnFailure="false"
+         syntaxCheck="false"
+>
+    <testsuites>
+        <testsuite name="QuTee Test Suite">
+            <directory>./tests/Qutee/</directory>
+        </testsuite>
+    </testsuites>
+
+</phpunit>
