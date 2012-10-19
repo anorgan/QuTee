@@ -2,6 +2,8 @@
 
 namespace Qutee;
 
+use Qutee\Queue;
+
 /**
  * Task
  *
@@ -52,7 +54,7 @@ class Task
      *
      * @param string $name
      *
-     * @return \Qutee\Task
+     * @return Task
      */
     public function setName($name)
     {
@@ -74,9 +76,9 @@ class Task
      *
      * @param array $data
      *
-     * @return \Qutee\Task
+     * @return Task
      */
-    public function setData($data)
+    public function setData(array $data)
     {
         $this->_data = $data;
 
@@ -96,7 +98,7 @@ class Task
      *
      * @param boolean $state
      *
-     * @return \Qutee\Task
+     * @return Task
      */
     public function setReserved($state)
     {
@@ -106,12 +108,23 @@ class Task
     }
 
     /**
+     * Unserialized task should not be reserved
+     *
+     * @return array
+     */
+    public function __sleep()
+    {
+        return array('_name', '_data');
+    }
+
+    /**
      *
      * @param string $name
      * @param array $data
      */
     public static function create($name, $data = null)
     {
-        \Qutee\Queue::push(new self($name, $data));
+        $queue = new Queue;
+        $queue->addTask(new self($name, $data));
     }
 }
