@@ -1,6 +1,8 @@
 QuTee
 =====
 
+[![Build Status](https://travis-ci.org/anorgan/QuTee.png)](https://travis-ci.org/anorgan/QuTee)
+
 Simple queue manager for PHP
 
 Disclaimer
