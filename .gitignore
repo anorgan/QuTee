@@ -1,3 +1,4 @@
 /composer.lock
 /var/cache/
 /var/log/
+/vendor/
