@@ -23,7 +23,14 @@ class Task
 
     /**
      *
+     * @var boolean
+     */
+    protected $_is_reserved = false;
+
+    /**
+     *
      * @param string $name
+     *
      * @param array $data
      */
     public function __construct($name = null, $data = array())
@@ -76,4 +83,35 @@ class Task
         return $this;
     }
 
+    /**
+     *
+     * @return boolean
+     */
+    public function isReserved()
+    {
+        return $this->_is_reserved;
+    }
+
+    /**
+     *
+     * @param boolean $state
+     *
+     * @return \Qutee\Task
+     */
+    public function setReserved($state)
+    {
+        $this->_is_reserved = $state;
+
+        return $this;
+    }
+
+    /**
+     *
+     * @param string $name
+     * @param array $data
+     */
+    public static function create($name, $data = null)
+    {
+        \Qutee\Queue::push(new self($name, $data));
+    }
 }

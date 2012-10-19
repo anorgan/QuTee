@@ -14,47 +14,52 @@ class Queue
 
     /**
      *
-     * @var string
-     */
-    protected $_name;
-
-    /**
-     *
      * @var array
      */
-    protected $_tasks;
+    protected static $_tasks = array();
 
     /**
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->_name;
-    }
-
-    /**
-     *
-     * @param string $name
      *
      * @return \Qutee\Queue
      */
-    public function setName($name)
+    public function clear()
     {
-        $this->_name = $name;
+        self::$_tasks = array();
 
         return $this;
     }
 
+    /**
+     *
+     * @param \Qutee\Task $task
+     *
+     * @return \Qutee\Queue
+     */
     public function addTask(Task $task)
     {
-        $this->_tasks[$task->getName()] = $task;
+        self::$_tasks[$task->getName()] = $task;
 
         return $this;
     }
 
+    /**
+     *
+     * @return array
+     */
     public function getTasks()
     {
-        return $this->_tasks;
+        return self::$_tasks;
+    }
+
+    /**
+     *
+     * @return \Qutee\Task
+     */
+    public function getNextTask()
+    {
+        $task = array_shift(self::$_tasks);
+        $task->setReserved(true);
+
+        return $task;
     }
 }

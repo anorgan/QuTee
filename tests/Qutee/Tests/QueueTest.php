@@ -2,6 +2,9 @@
 
 namespace Qutee\Tests;
 
+use Qutee\Queue;
+use Qutee\Task;
+
 /**
  * Queue
  *
@@ -20,11 +23,17 @@ class QueueTest extends \PHPUnit_Framework_TestCase
         $this->object = new \Qutee\Queue();
     }
 
-    public function testCanSetName()
+    public function tearDown()
     {
-        $this->assertNull($this->object->getName());
-        $this->object->setName('testName');
-        $this->assertEquals('testName', $this->object->getName());
+        $this->object->clear();
+    }
+
+    public function testClearingQueueClearsAllTasks()
+    {
+        $this->assertEmpty($this->object->getTasks());
+        $this->object->addTask(new Task('test'));
+        $this->object->clear();
+        $this->assertEmpty($this->object->getTasks());
     }
 
     /**
@@ -59,5 +68,39 @@ class QueueTest extends \PHPUnit_Framework_TestCase
 
         $tasks = $this->object->getTasks();
         $this->assertNotEmpty($tasks);
+    }
+
+    /**
+     * @covers \Qutee\Queue::getNextTask
+     */
+    public function testGettingATaskReturnsNextOne()
+    {
+        $this->object
+                ->addTask(new Task('task1'))
+                ->addTask(new Task('task2'));
+
+        $task1 = $this->object->getNextTask();
+        $this->assertEquals('task1', $task1->getName());
+
+        $task2 = $this->object->getNextTask();
+        $this->assertEquals('task2', $task2->getName());
+    }
+
+    /**
+     * @covers \Qutee\Queue::getNextTask
+     */
+    public function testGettingATaskReservesThatTask()
+    {
+        $task1 = new Task('task1');
+        $task2 = new Task('task2');
+        $this->object
+                ->addTask($task1)
+                ->addTask($task2);
+
+        $this->assertFalse($task1->isReserved());
+        $this->assertFalse($task2->isReserved());
+
+        $task = $this->object->getNextTask();
+        $this->assertTrue($task->isReserved());
     }
 }
