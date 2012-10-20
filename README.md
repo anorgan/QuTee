@@ -62,5 +62,9 @@ Disclaimer
 TODO
 ----
 - Add queue persistor using adapters (DB, MongoDB, Redis, Memcache)
+- Make worker spawn child processes for running tasks
+- Add method name property to task, together with current default one, so it is easier to set it
+- Add support for method name inside task name
+    - i.e. SomeTask::methodName -> setName('SomeTask')->setMethodName('methodName')
 - Add logging
 - Add reporting dashboard
