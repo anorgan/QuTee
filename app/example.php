@@ -9,7 +9,7 @@ use Qutee\Worker;
 // Create a task
 $task = new Task;
 $task
-    ->setName('SendMail')
+    ->setName('Acme/SendMail')
     ->setData(array(
         'to'        => 'you@yourdomain.com',
         'from'      => 'qutee@nowhere.tld',
@@ -22,7 +22,7 @@ $queue = new Queue();
 $queue->addTask($task);
 
 // Or do this in one go
-Task::create('SendMail', array(
+Task::create('Acme/SendMail', array(
     'to'        => 'you@yourdomain.com',
     'from'      => 'qutee@nowhere.tld',
     'subject'   => 'Hi!',

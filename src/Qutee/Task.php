@@ -42,8 +42,13 @@ class Task
      */
     public function __construct($name = null, $data = array())
     {
-        $this->_name = $name;
-        $this->_data = $data;
+        if (null !== $name) {
+            $this->setName($name);
+        }
+
+        if (null !== $data) {
+            $this->setData($data);
+        }
     }
 
     /**
@@ -64,7 +69,7 @@ class Task
     public function setName($name)
     {
         // validate name
-        if (!preg_match('/^[a-zA-Z0-9 _-]+$/', $name)) {
+        if (!preg_match('/^[a-zA-Z0-9\/\\\ _-]+$/', $name)) {
             throw new \InvalidArgumentException('Name can be only alphanumerics, spaces, underscores and dashes');
         }
 
@@ -84,9 +89,18 @@ class Task
             throw new Exception('Name not set, can not create class name');
         }
 
-        $className = str_replace(array('-','_'), ' ', strtolower($this->_name));
+        if (strpos($this->_name, '\\') !== false) {
+            // FQCN?
+            $className = $this->_name;
+        } elseif (strpos($this->_name, '/') !== false) {
+            // Forward slash FQCN?
+            $className = str_replace('/', '\\', $this->_name);
+        } else {
+            $className = str_replace(array('-','_'), ' ', strtolower($this->_name));
+            $className = str_replace(' ', '', ucwords($className));
+        }
 
-        return str_replace(' ', '', ucwords($className));
+        return $className;
     }
 
     /**

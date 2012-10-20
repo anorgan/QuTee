@@ -2,8 +2,10 @@
 
 namespace Qutee;
 
+use Qutee\Exception;
 use Qutee\Queue;
 use Qutee\Task;
+use Qutee\TaskInterface;
 
 /**
  * Worker
@@ -224,8 +226,8 @@ class Worker
 
                 try {
                     $this->_runTask($task);
-                } catch (Exception $e) {
-                    echo $e->getTraceAsString();
+                } catch (\Exception $e) {
+                    echo $e->getMessage();
                 }
             }
 
@@ -282,11 +284,15 @@ class Worker
      * Get class of the task, run it's default method or method specified in
      * task data [method]
      *
-     * @param \Qutee\Task $task
+     * @param Task $task
      */
     protected function _runTask(Task $task)
     {
         $taskClassName  = $task->getClassName();
+        if (!class_exists($taskClassName)) {
+            throw new \InvalidArgumentException(sprintf('Task class "%s" not found', $taskClassName));
+        }
+
         $taskObject     = new $taskClassName;
 
         if ($taskObject instanceof TaskInterface) {

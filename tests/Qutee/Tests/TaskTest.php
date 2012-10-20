@@ -85,9 +85,19 @@ class TaskTest extends \PHPUnit_Framework_TestCase
             'expected'  => 'Allcaps'
         );
 
-        $data['some task with descriptive name'] = array(
-            'name'      => 'some task with descriptive name',
+        $data['some task - with_descriptive _ name'] = array(
+            'name'      => 'some task - with_descriptive _ name',
             'expected'  => 'SomeTaskWithDescriptiveName'
+        );
+
+        $data['Fqcn\\Namespace\\Task'] = array(
+            'name'      => 'Fqcn\\Namespace\\Task',
+            'expected'  => 'Fqcn\\Namespace\\Task'
+        );
+
+        $data['Fqcn/ForwardNamespace/Task'] = array(
+            'name'      => 'Fqcn/ForwardNamespace/Task',
+            'expected'  => 'Fqcn\ForwardNamespace\Task'
         );
 
         return $data;

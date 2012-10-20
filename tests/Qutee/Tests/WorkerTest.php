@@ -156,4 +156,23 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
         $worker->setBlacklistedTask('some_other_task');
         $worker->run();
     }
+
+    public function testRunsAnyTaskIfNotUsingWhitelistOrBlacklist()
+    {
+        $task   = Task::create('test', array());
+        $worker = $this->getMock('Qutee\Worker', array('_runTask'));
+        $worker->expects($this->once())->method('_runTask');
+
+        $worker->setInterval(0);
+        $worker->run();
+    }
+
+    /**
+     * @expectedException \Qutee\Exception
+     */
+    public function testThrowsExceptionIfTaskClassDoesNotExist()
+    {
+        Task::create('UnknownClass');
+        $this->object->run();
+    }
 }
