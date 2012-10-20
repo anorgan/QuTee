@@ -63,7 +63,7 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \Qutee\Worker::getBlacklistedTask
+     * @covers \Qutee\Worker::getBlacklistedTasks
      * @covers \Qutee\Worker::setBlacklistedTask
      * @covers \Qutee\Worker::isBlacklisted
      */
@@ -78,7 +78,7 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Qutee\Exception
      * @covers \Qutee\Worker::setWhitelistedTask
-     * @covers \Qutee\Worker::getWhitelistedTask
+     * @covers \Qutee\Worker::getWhitelistedTasks
      * @depends testCanWhitelistTask
      * @depends testCanBlacklistTask
      */

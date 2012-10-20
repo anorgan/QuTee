@@ -30,8 +30,8 @@ class TaskTest extends \PHPUnit_Framework_TestCase
     public function testCanSetAndGetName()
     {
         $this->assertEmpty($this->object->getName());
-        $this->object->setName('Task');
-        $this->assertEquals('Task', $this->object->getName());
+        $this->object->setName('Task with spaces - dashes _ 4343');
+        $this->assertEquals('Task with spaces - dashes _ 4343', $this->object->getName());
     }
 
     /**
@@ -40,6 +40,74 @@ class TaskTest extends \PHPUnit_Framework_TestCase
     public function testSettingDataThrowsInvalidArgumentException()
     {
         $this->object->setData('string');
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testSettingWrongNameThrowsInvalidArgumentException()
+    {
+        $this->object->setName('Test- !a');
+    }
+
+    /**
+     * @dataProvider dataForClassNameTest
+     * @covers \Qutee\Task::getClassName
+     * @param string $name
+     * @param string $expectedClassName
+     */
+    public function testGettingClassName($name, $expectedClassName)
+    {
+        $this->object->setName($name);
+        $this->assertEquals($expectedClassName, $this->object->getClassName());
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function dataForClassNameTest()
+    {
+        $data = array();
+
+        $data['Task'] = array(
+            'name'      => 'Task',
+            'expected'  => 'Task'
+        );
+
+        $data['lowercased'] = array(
+            'name'      => 'lowercased',
+            'expected'  => 'Lowercased'
+        );
+
+        $data['ALLCAPS'] = array(
+            'name'      => 'ALLCAPS',
+            'expected'  => 'Allcaps'
+        );
+
+        $data['some task with descriptive name'] = array(
+            'name'      => 'some task with descriptive name',
+            'expected'  => 'SomeTaskWithDescriptiveName'
+        );
+
+        return $data;
+    }
+
+    /**
+     * @covers \Qutee\Task::getMethodName
+     */
+    public function testGettingMethodNameReturnsDefaultMethod()
+    {
+        $this->assertEquals('run', $this->object->getMethodName());
+    }
+
+    /**
+     * @covers \Qutee\Task::getMethodName
+     */
+    public function testGettingMethodNameDefinedInData()
+    {
+        $this->object->setData(array('method' => 'methodName'));
+        $this->assertEquals('methodName', $this->object->getMethodName());
     }
 
     /**
@@ -69,6 +137,14 @@ class TaskTest extends \PHPUnit_Framework_TestCase
         $task = new Task('TaskName', $data);
         $this->assertEquals('TaskName', $task->getName());
         $this->assertEquals($data, $task->getData());
+    }
+
+    /**
+     * @expectedException \Qutee\Exception
+     */
+    public function testExceptionThrownIfRequestingClassNameWithoutName()
+    {
+        $this->object->getClassName();
     }
 
     /**

@@ -278,10 +278,28 @@ class Worker
         } // Task took more than the interval, don't sleep
     }
 
-    protected function _runTask()
+    /**
+     * Get class of the task, run it's default method or method specified in
+     * task data [method]
+     *
+     * @param \Qutee\Task $task
+     */
+    protected function _runTask(Task $task)
     {
-        // Get class of the task, run it's default method or method specified in
-        // task data [method]
-        
+        $taskClassName  = $task->getClassName();
+        $taskObject     = new $taskClassName;
+
+        if ($taskObject instanceof TaskInterface) {
+
+            $taskObject->setData($task->getData());
+            $taskObject->run();
+
+        } else {
+
+            $methodName     = $task->getMethodName();
+            $taskObject->$methodName($task->getData());
+
+        }
     }
+
 }

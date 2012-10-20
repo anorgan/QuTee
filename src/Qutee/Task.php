@@ -12,6 +12,11 @@ use Qutee\Queue;
 class Task
 {
     /**
+     * Default name of the method to run the task
+     */
+    const DEFAULT_METHOD_NAME = 'run';
+
+    /**
      *
      * @var string
      */
@@ -58,9 +63,44 @@ class Task
      */
     public function setName($name)
     {
+        // validate name
+        if (!preg_match('/^[a-zA-Z0-9 _-]+$/', $name)) {
+            throw new \InvalidArgumentException('Name can be only alphanumerics, spaces, underscores and dashes');
+        }
+
         $this->_name = $name;
 
         return $this;
+    }
+
+    /**
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function getClassName()
+    {
+        if ($this->_name === null) {
+            throw new Exception('Name not set, can not create class name');
+        }
+
+        $className = str_replace(array('-','_'), ' ', strtolower($this->_name));
+
+        return str_replace(' ', '', ucwords($className));
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function getMethodName()
+    {
+        $data = $this->getData();
+        if (isset($data['method']) && strlen($data['method'])) {
+            return $data['method'];
+        } else {
+            return self::DEFAULT_METHOD_NAME;
+        }
     }
 
     /**
