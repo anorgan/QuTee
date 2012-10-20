@@ -3,7 +3,7 @@ QuTee
 
 [![Build Status](https://travis-ci.org/anorgan/QuTee.png)](https://travis-ci.org/anorgan/QuTee)
 
-Simple queue manager for PHP
+Simple queue manager and task processor for PHP
 
 Example
 -------

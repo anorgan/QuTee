@@ -167,12 +167,4 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
         $worker->run();
     }
 
-    /**
-     * @expectedException \Qutee\Exception
-     */
-    public function testThrowsExceptionIfTaskClassDoesNotExist()
-    {
-        Task::create('UnknownClass');
-        $this->object->run();
-    }
 }
