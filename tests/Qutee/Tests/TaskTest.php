@@ -20,7 +20,7 @@ class TaskTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->object = new Task();
+        $this->object = new Task;
     }
 
     /**

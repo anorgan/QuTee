@@ -121,10 +121,15 @@ class Task
      *
      * @param string $name
      * @param array $data
+     *
+     * @return Task
      */
     public static function create($name, $data = null)
     {
-        $queue = new Queue;
-        $queue->addTask(new self($name, $data));
+        $queue  = new Queue;
+        $task   = new self($name, $data);
+        $queue->addTask($task);
+
+        return $task;
     }
 }

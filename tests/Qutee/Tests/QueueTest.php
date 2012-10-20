@@ -20,7 +20,7 @@ class QueueTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->object = new \Qutee\Queue();
+        $this->object = new Queue;
     }
 
     public function tearDown()
