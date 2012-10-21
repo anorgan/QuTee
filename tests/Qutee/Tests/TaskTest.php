@@ -136,7 +136,7 @@ class TaskTest extends \PHPUnit_Framework_TestCase
      */
     public function testExceptionThrownIfSettingIncorrectMethodName($methodName)
     {
-        $this->object->setMethodName();
+        $this->object->setMethodName($methodName);
     }
 
     /**
@@ -250,6 +250,7 @@ class TaskTest extends \PHPUnit_Framework_TestCase
         );
         $this->object->setName('TestTask');
         $this->object->setData($data);
+        $this->object->setMethodName('methodName');
         $this->object->setReserved(true);
 
         $serialized     = serialize($this->object);
@@ -257,6 +258,7 @@ class TaskTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('\Qutee\Task', $unserialized);
         $this->assertEquals('TestTask', $unserialized->getName());
+        $this->assertEquals('methodName', $unserialized->getMethodName());
         $this->assertSame($data, $unserialized->getData());
         $this->assertFalse($unserialized->isReserved());
     }

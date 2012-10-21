@@ -116,7 +116,7 @@ class Task
     public function setMethodName($methodName)
     {
         // validate name
-        if (!preg_match('/^[a-zA-Z][a-zA-Z0-9_]+$/', $methodName)) {
+        if (!preg_match('/^[a-z][a-zA-Z0-9_]+$/', $methodName)) {
             throw new \InvalidArgumentException('Method name can be only alphanumerics and underscores');
         }
 
