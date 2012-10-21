@@ -78,9 +78,18 @@ class Task
      */
     public function setName($name)
     {
-        // validate name
+        // Name can hold method name in it
+        if (strpos($name, '::')) {
+            list($name, $methodName) = explode('::', $name);
+        }
+
+        // Validate name
         if (!preg_match('/^[a-zA-Z0-9\/\\\ _-]+$/', $name)) {
             throw new \InvalidArgumentException('Name can be only alphanumerics, spaces, underscores and dashes');
+        }
+
+        if (isset($methodName)) {
+            $this->setMethodName($methodName);
         }
 
         $this->_name = $name;
@@ -211,10 +220,10 @@ class Task
      *
      * @return Task
      */
-    public static function create($name, $data = null)
+    public static function create($name, $data = null, $methodName = null)
     {
         $queue  = new Queue;
-        $task   = new self($name, $data);
+        $task   = new self($name, $data, $methodName);
         $queue->addTask($task);
 
         return $task;

@@ -36,6 +36,7 @@ class TaskTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \Exception
+     * @covers \Qutee\Task::setData
      */
     public function testSettingDataThrowsInvalidArgumentException()
     {
@@ -44,6 +45,7 @@ class TaskTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \Exception
+     * @covers \Qutee\Task::setName
      */
     public function testSettingWrongNameThrowsInvalidArgumentException()
     {
@@ -133,6 +135,7 @@ class TaskTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Exception
      * @dataProvider dataForMetodNameException
+     * @covers \Qutee\Task::setMethodName
      */
     public function testExceptionThrownIfSettingIncorrectMethodName($methodName)
     {
@@ -192,7 +195,21 @@ class TaskTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers \Qutee\Task::setName
+     * @covers \Qutee\Task::setMethodName
+     */
+    public function testSettingMethodNameViaName()
+    {
+        $this->assertEquals('run', $this->object->getMethodName());
+
+        $this->object->setName('TaskName::methodName');
+        $this->assertEquals('TaskName',     $this->object->getName());
+        $this->assertEquals('methodName',   $this->object->getMethodName());
+    }
+
+    /**
      * @expectedException \Qutee\Exception
+     * @covers \Qutee\Task::getClassName
      */
     public function testExceptionThrownIfRequestingClassNameWithoutName()
     {
@@ -232,11 +249,12 @@ class TaskTest extends \PHPUnit_Framework_TestCase
         $data = array(
             'test' => 'data'
         );
-        Task::create('TestTask', $data);
+        Task::create('TestTask', $data, 'methodName');
 
         $task = $queue->getNextTask();
         $this->assertInstanceOf('\Qutee\Task', $task);
         $this->assertEquals('TestTask', $task->getName());
+        $this->assertEquals('methodName', $task->getMethodName());
         $this->assertSame($data, $task->getData());
     }
 
