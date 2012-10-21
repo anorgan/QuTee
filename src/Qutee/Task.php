@@ -24,6 +24,12 @@ class Task
 
     /**
      *
+     * @var string
+     */
+    protected $_methodName;
+
+    /**
+     *
      * @var array
      */
     protected $_data;
@@ -40,7 +46,7 @@ class Task
      *
      * @param array $data
      */
-    public function __construct($name = null, $data = array())
+    public function __construct($name = null, $data = array(), $methodName = null)
     {
         if (null !== $name) {
             $this->setName($name);
@@ -48,6 +54,10 @@ class Task
 
         if (null !== $data) {
             $this->setData($data);
+        }
+
+        if (null !== $methodName) {
+            $this->setMethodName($methodName);
         }
     }
 
@@ -81,6 +91,43 @@ class Task
     /**
      *
      * @return string
+     */
+    public function getMethodName()
+    {
+        if ($this->_methodName === null) {
+            $data = $this->getData();
+            if (isset($data['method']) && strlen($data['method'])) {
+                $this->_methodName = $data['method'];
+            } else {
+                $this->_methodName = self::DEFAULT_METHOD_NAME;
+            }
+        }
+
+        return $this->_methodName;
+    }
+
+    /**
+     *
+     * @param string $methodName
+     * @return \Qutee\Task
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function setMethodName($methodName)
+    {
+        // validate name
+        if (!preg_match('/^[a-zA-Z][a-zA-Z0-9_]+$/', $methodName)) {
+            throw new \InvalidArgumentException('Method name can be only alphanumerics and underscores');
+        }
+
+        $this->_methodName = $methodName;
+
+        return $this;
+    }
+
+    /**
+     *
+     * @return string
      * @throws Exception
      */
     public function getClassName()
@@ -101,20 +148,6 @@ class Task
         }
 
         return $className;
-    }
-
-    /**
-     *
-     * @return string
-     */
-    public function getMethodName()
-    {
-        $data = $this->getData();
-        if (isset($data['method']) && strlen($data['method'])) {
-            return $data['method'];
-        } else {
-            return self::DEFAULT_METHOD_NAME;
-        }
     }
 
     /**
@@ -168,7 +201,7 @@ class Task
      */
     public function __sleep()
     {
-        return array('_name', '_data');
+        return array('_name', '_data', '_methodName');
     }
 
     /**

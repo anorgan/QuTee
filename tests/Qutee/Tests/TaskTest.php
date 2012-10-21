@@ -121,6 +121,47 @@ class TaskTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers \Qutee\Task::getMethodName
+     * @covers \Qutee\Task::setMethodName
+     */
+    public function testCanSetAndGetMethodName()
+    {
+        $this->object->setMethodName('methodName');
+        $this->assertEquals('methodName', $this->object->getMethodName());
+    }
+
+    /**
+     * @expectedException \Exception
+     * @dataProvider dataForMetodNameException
+     */
+    public function testExceptionThrownIfSettingIncorrectMethodName($methodName)
+    {
+        $this->object->setMethodName();
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function dataForMetodNameException()
+    {
+        $data = array();
+        $data[''] = array(
+            'methodName' => '',
+        );
+        $data['UcCamelCase'] = array(
+            'methodName' => 'UcCamelCase',
+        );
+        $data['điberiš'] = array(
+            'methodName' => 'điberiš',
+        );
+        $data['some whitespace'] = array(
+            'methodName' => 'some whitespace',
+        );
+        return $data;
+    }
+
+    /**
      * @covers \Qutee\Task::getData
      * @covers \Qutee\Task::setData
      */
@@ -144,9 +185,10 @@ class TaskTest extends \PHPUnit_Framework_TestCase
         $data = array(
             'test' => 'data'
         );
-        $task = new Task('TaskName', $data);
+        $task = new Task('TaskName', $data, 'methodName');
         $this->assertEquals('TaskName', $task->getName());
         $this->assertEquals($data, $task->getData());
+        $this->assertEquals('methodName', $task->getMethodName());
     }
 
     /**
