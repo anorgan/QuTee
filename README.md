@@ -59,7 +59,7 @@ Disclaimer
 - Don't use it yet, don't know what version this is :)
 - Will be extremely simple, does not pretend to replace 0MQ, Gearman, Redis and such
 
-TODO
+[TODO](https://github.com/anorgan/QuTee/issues?milestone=1&state=open)
 ----
 - Add queue persistor using adapters (DB, MongoDB, Redis, Memcache)
 - Make worker spawn child processes for running tasks
