@@ -1,6 +1,7 @@
 <?php
 
-require_once __DIR__ . "/../vendor/autoload.php";
+$loader = require_once __DIR__ . "/../vendor/autoload.php";
+$loader->add('Acme', __DIR__);
 
 use Qutee\Queue;
 use Qutee\Task;
