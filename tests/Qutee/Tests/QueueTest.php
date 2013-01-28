@@ -21,13 +21,28 @@ class QueueTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->object = new Queue;
+        $this->object->setPersistor(new \Qutee\Persistor\Memory);
     }
 
-    public function tearDown()
+    /**
+     * @covers \Qutee\Queue::getTask
+     */
+    public function testGettingTaskWithEmptyQueueReturnsNull()
     {
-        $this->object->clear();
+        $this->assertNull($this->object->getTask());
     }
 
+    /**
+     * @covers \Qutee\Queue::getTasks
+     */
+    public function testGettingTasksWithEmptyQueueReturnsEmptyArray()
+    {
+        $this->assertEmpty($this->object->getTasks());
+    }
+
+    /**
+     * @covers \Qutee\Queue::clear
+     */
     public function testClearingQueueClearsAllTasks()
     {
         $this->assertEmpty($this->object->getTasks());
@@ -71,33 +86,7 @@ class QueueTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \Qutee\Queue::isEmpty
-     */
-    public function testTestingIfQueueHasTasks()
-    {
-        $this->assertTrue($this->object->isEmpty());
-
-        $task = $this->getMock('Qutee\Task', array('isReserved'));
-        $task->expects($this->once())
-             ->method('isReserved')
-             ->will($this->returnValue(false));
-
-        $this->object->addTask($task);
-
-        $this->assertFalse($this->object->isEmpty());
-
-        $task = $this->getMock('Qutee\Task', array('isReserved'));
-        $task->expects($this->once())
-             ->method('isReserved')
-             ->will($this->returnValue(true));
-
-        $this->object->clear()->addTask($task);
-        $this->assertTrue($this->object->isEmpty());
-    }
-
-    /**
-     * @covers \Qutee\Queue::getNextTask
-     * @depends testTestingIfQueueHasTasks
+     * @covers \Qutee\Queue::getTask
      */
     public function testGettingATaskReturnsNextOne()
     {
@@ -105,77 +94,112 @@ class QueueTest extends \PHPUnit_Framework_TestCase
                 ->addTask(new Task('task1'))
                 ->addTask(new Task('task2'));
 
-        $task1 = $this->object->getNextTask();
+        $task1 = $this->object->getTask();
         $this->assertEquals('task1', $task1->getName());
 
-        $task2 = $this->object->getNextTask();
+        $task2 = $this->object->getTask();
         $this->assertEquals('task2', $task2->getName());
     }
 
     /**
-     * @covers \Qutee\Queue::getNextTask
-     * @depends testTestingIfQueueHasTasks
+     * @covers \Qutee\Queue::getTask
      */
-    public function testGettingNextTaskDoesNotReturnReservedTask()
+    public function testGettingTaskObeyesWhitelist()
     {
-        $task1 = $this->getMock('Qutee\Task', array('isReserved', 'getName'));
-        $task1->expects($this->any())
-             ->method('isReserved')
-             ->will($this->returnValue(false));
-        $task1->expects($this->once())
-             ->method('getName')
-             ->will($this->returnValue('task1'));
+        $task1 = new Task('task1');
+        $task2 = new Task('task2');
 
-        $task2 = $this->getMock('Qutee\Task', array('isReserved', 'getName'));
-        $task2->expects($this->any())
-             ->method('isReserved')
-             ->will($this->returnValue(true));
-        $task2->expects($this->never())
-             ->method('getName')
-             ->will($this->returnValue('task2'));
-
-        $task3 = $this->getMock('Qutee\Task', array('isReserved', 'getName'));
-        $task3->expects($this->any())
-             ->method('isReserved')
-             ->will($this->returnValue(false));
-        $task3->expects($this->once())
-             ->method('getName')
-             ->will($this->returnValue('task3'));
-
-        $this->object->addTask($task1);
-        $this->object->addTask($task2);
-        $this->object->addTask($task3);
-
-        $task = $this->object->getNextTask();
-        $this->assertEquals('task1', $task->getName());
-
-        // Task 2 is reserved, getName is never called, for us, it does not exist
-
-        $task = $this->object->getNextTask();
-        $this->assertEquals('task3', $task->getName());
-
-    }
-
-    /**
-     * @covers \Qutee\Queue::getNextTask
-     * @depends testTestingIfQueueHasTasks
-     */
-    public function testGettingTasksReturnsThemInRoundRobbinOrder()
-    {
         $this->object
-                ->addTask(new Task('task1'))
-                ->addTask(new Task('task2'));
+                ->addTask($task1)
+                ->addTask($task2);
 
-        $task1 = $this->object->getNextTask();
-        $this->assertEquals('task1', $task1->getName());
+        $params = array(
+            'whitelist' => array('task2')
+        );
+        $outputTask1 = $this->object->getTask($params);
+        $outputTask2 = $this->object->getTask($params);
 
-        $task2 = $this->object->getNextTask();
-        $this->assertEquals('task2', $task2->getName());
+        $this->assertSame($outputTask1, $task2);
+        $this->assertNull($outputTask2);
 
-        $task1 = $this->object->getNextTask();
-        $this->assertEquals('task1', $task1->getName());
+    }
 
-        $task2 = $this->object->getNextTask();
-        $this->assertEquals('task2', $task2->getName());
+    /**
+     * @covers \Qutee\Queue::getTasks
+     */
+    public function testGettingTasksObeyesWhitelist()
+    {
+        $task1 = new Task('task1');
+        $task2 = new Task('task2');
+
+        $this->object
+                ->addTask($task1)
+                ->addTask($task2);
+
+        $params = array(
+            'whitelist' => array('task2')
+        );
+        $outputTasks = $this->object->getTasks($params);
+
+        $this->assertTrue(count($outputTasks) == 1);
+        $this->assertSame(reset($outputTasks), $task2);
+    }
+
+    /**
+     * @covers \Qutee\Queue::factory
+     * @expectedException \InvalidArgumentException
+     */
+    public function testCreatingQueueViaFactoryThrowsExceptionForMissingPersistor()
+    {
+        Queue::factory(array('persistor' => 'NonExistingOne'));
+    }
+
+    /**
+     * @covers \Qutee\Queue::factory
+     */
+    public function testCreatingQueueViaFactoryCreatesWithDefaultPersistor()
+    {
+        $queue = Queue::factory();
+
+        $this->assertInstanceOf('\Qutee\Persistor\Memory', $queue->getPersistor());
+    }
+
+    /**
+     * @covers \Qutee\Queue::factory
+     */
+    public function testCreatingQueueViaFactoryPassesOptionsToPersistor()
+    {
+        $options = array(
+            'host'  => 'localhost',
+            'port'  => '3333'
+        );
+
+        $queue = Queue::factory(array(
+            'persistor' => 'memory',
+            'options'   => $options
+        ));
+
+        $this->assertInstanceOf('\Qutee\Persistor\Memory', $queue->getPersistor());
+        $this->assertSame($options, $queue->getPersistor()->getOptions());
+    }
+
+    /**
+     * @covers \Qutee\Queue::get
+     */
+    public function testGettingQueueBehavesAsSingleton()
+    {
+        $queue = Queue::factory();
+
+        $this->assertSame($queue, Queue::get());
+    }
+
+    /**
+     * @covers \Qutee\Queue::get
+     * @expectedException \Qutee\Exception
+     */
+    public function testGettingQueueWithoutPreviouslyCreatingItThrowsException()
+    {
+        Queue::setInstance(null);
+        Queue::get();
     }
 }

@@ -11,54 +11,41 @@ use Qutee\Task;
  */
 class Queue
 {
+    /**
+     *
+     * @var \Qutee\Persistor\PersistorInterface
+     */
+    protected $_persistor;
 
     /**
      *
-     * @var array
+     * @var \Qutee\Queue
      */
-    protected static $_tasks = array();
+    static protected $_instance;
 
-    /**
-     *
-     * @return boolean
-     */
-    public function isEmpty()
+    public function __construct()
     {
-        if (empty(self::$_tasks)) {
-            return true;
-        }
-
-        // Some tasks are reserved, make as they don't exist
-        $nrOfTasks = count(self::$_tasks);
-
-        // Don't mess with the order
-        $tasks  = self::$_tasks;
-
-        $cnt    = 0;
-        foreach ($tasks as $task) {
-            if (!$task->isReserved()) {
-                continue;
-            }
-            $cnt++;
-        }
-        unset($tasks);
-
-        if ($cnt !== $nrOfTasks) {
-            // We have a mismatch of number of tasks and reserved tasks, queue
-            // is not empty
-            return false;
-        }
-
-        return true;
+        self::$_instance = $this;
     }
 
     /**
      *
+     * @return \Qutee\Persistor\PersistorInterface
+     */
+    public function getPersistor()
+    {
+        return $this->_persistor;
+    }
+
+    /**
+     *
+     * @param \Qutee\Persistor\PersistorInterface $persistor
+     *
      * @return \Qutee\Queue
      */
-    public function clear()
+    public function setPersistor(\Qutee\Persistor\PersistorInterface $persistor)
     {
-        self::$_tasks = array();
+        $this->_persistor = $persistor;
 
         return $this;
     }
@@ -71,38 +58,92 @@ class Queue
      */
     public function addTask(Task $task)
     {
-        self::$_tasks[] = $task;
+        $this->getPersistor()->addTask($task);
 
         return $this;
     }
 
     /**
      *
-     * @return array
+     * @param array $params
+     *
+     * @return \Qutee\Task
      */
-    public function getTasks()
+    public function getTask($params = array())
     {
-        return self::$_tasks;
+        return $this->getPersistor()->getTask($params);
     }
 
     /**
      *
-     * @return \Qutee\Task
+     * @param array $params
+     *
+     * @return array
      */
-    public function getNextTask()
+    public function getTasks($params = array())
     {
-        if ($this->isEmpty()) {
-            return;
-        }
+        return $this->getPersistor()->getTasks($params);
+    }
 
-        $task = null;
-        while ($task === null || $task->isReserved()) {
-            if (false === ($task = current(self::$_tasks))) {
-                $task = reset(self::$_tasks);
+    /**
+     * Clear all tasks
+     *
+     * @return boolean
+     */
+    public function clear()
+    {
+        return $this->getPersistor()->clear();
+    }
+
+    /**
+     * Create queue
+     *
+     * @param array $config:
+     *  persistor: name of the persistor adapter
+     *  options:   array with options for the persistor
+     *
+     * @return \Qutee\Queue
+     * @throws \InvalidArgumentException
+     */
+    static public function factory($config = array())
+    {
+        if (isset($config['persistor'])) {
+            $persistorClass = 'Qutee\\Persistor\\'. ucfirst($config['persistor']);
+            if (!class_exists($persistorClass)) {
+                throw new \InvalidArgumentException(sprintf('Persistor "%s" doesn\'t exist', $config['persistor']));
             }
-            next(self::$_tasks);
+
+            $persistor = new $persistorClass;
+
+            if (isset($config['options'])) {
+                $persistor->setOptions($config['options']);
+            }
+        } else {
+            // Default persistor
+            $persistor = new \Qutee\Persistor\Memory;
         }
 
-        return $task;
+        $queue = new self;
+        $queue->setPersistor($persistor);
+
+        return $queue;
+    }
+
+    static public function setInstance($instance)
+    {
+        self::$_instance = $instance;
+    }
+
+    /**
+     *
+     * @return \Qutee\Queue
+     */
+    static public function get()
+    {
+        if (null === self::$_instance) {
+            throw new Exception('Queue not created');
+        }
+
+        return self::$_instance;
     }
 }

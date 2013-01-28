@@ -99,7 +99,7 @@ class TaskTest extends \PHPUnit_Framework_TestCase
 
         $data['Fqcn/ForwardNamespace/Task'] = array(
             'name'      => 'Fqcn/ForwardNamespace/Task',
-            'expected'  => 'Fqcn\ForwardNamespace\Task'
+            'expected'  => 'Fqcn\\ForwardNamespace\\Task'
         );
 
         return $data;
@@ -111,15 +111,6 @@ class TaskTest extends \PHPUnit_Framework_TestCase
     public function testGettingMethodNameReturnsDefaultMethod()
     {
         $this->assertEquals('run', $this->object->getMethodName());
-    }
-
-    /**
-     * @covers \Qutee\Task::getMethodName
-     */
-    public function testGettingMethodNameDefinedInData()
-    {
-        $this->object->setData(array('method' => 'methodName'));
-        $this->assertEquals('methodName', $this->object->getMethodName());
     }
 
     /**
@@ -178,6 +169,27 @@ class TaskTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($data, $this->object->getData());
     }
 
+
+    /**
+     * @covers \Qutee\Task::getPriority
+     * @covers \Qutee\Task::setPriority
+     */
+    public function testCanSetAndGetPriority()
+    {
+        $this->object->setPriority(Task::PRIORITY_LOW);
+        $this->assertEquals(1, $this->object->getPriority());
+    }
+
+    /**
+     * @covers \Qutee\Task::getUniqueId
+     * @covers \Qutee\Task::setUniqueId
+     */
+    public function testCanSetAndGetUniqueId()
+    {
+        $this->object->setUniqueId('some_unique_id');
+        $this->assertEquals('some_unique_id', $this->object->getUniqueId());
+    }
+
     /**
      * @covers \Qutee\Task::__construct
      * @depends testCanSetAndGetName
@@ -188,10 +200,12 @@ class TaskTest extends \PHPUnit_Framework_TestCase
         $data = array(
             'test' => 'data'
         );
-        $task = new Task('TaskName', $data, 'methodName');
+        $task = new Task('TaskName', $data, 'methodName', Task::PRIORITY_HIGH, 'unique_identifier');
         $this->assertEquals('TaskName', $task->getName());
         $this->assertEquals($data, $task->getData());
         $this->assertEquals('methodName', $task->getMethodName());
+        $this->assertEquals(3, $task->getPriority());
+        $this->assertEquals('unique_identifier', $task->getUniqueId());
     }
 
     /**
@@ -217,41 +231,30 @@ class TaskTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \Qutee\Task::isReserved
+     * @covers \Qutee\Task::isUnique
      */
-    public function testTaskIsNotReservedOnCreation()
+    public function testShouldPassIfIsUniqueReturnsTrueIfTaskIsUnique()
     {
-        $this->assertFalse($this->object->isReserved());
-    }
-
-    /**
-     * @covers \Qutee\Task::isReserved
-     * @covers \Qutee\Task::setReserved
-     */
-    public function testCanReserveAndUnreserveTask()
-    {
-        $this->object->setReserved(true);
-        $this->assertTrue($this->object->isReserved());
-
-        $this->object->setReserved(false);
-        $this->assertFalse($this->object->isReserved());
+        $this->assertFalse($this->object->isUnique());
+        $this->object->setUniqueId('SomeId');
+        $this->assertTrue($this->object->isUnique());
     }
 
     /**
      * @covers \Qutee\Task::create
+     * @todo This is integrational test, not unit test, remedy!
      */
     public function testCreatingTaskViaStaticMethodAddsTaskToQueue()
     {
-        $queue = new Queue;
-        $queue->clear();
-        $this->assertTrue($queue->isEmpty());
+        $queue = Queue::factory();
+        $this->assertEmpty($queue->getTasks());
 
         $data = array(
             'test' => 'data'
         );
         Task::create('TestTask', $data, 'methodName');
 
-        $task = $queue->getNextTask();
+        $task = $queue->getTask();
         $this->assertInstanceOf('\Qutee\Task', $task);
         $this->assertEquals('TestTask', $task->getName());
         $this->assertEquals('methodName', $task->getMethodName());
@@ -269,7 +272,8 @@ class TaskTest extends \PHPUnit_Framework_TestCase
         $this->object->setName('TestTask');
         $this->object->setData($data);
         $this->object->setMethodName('methodName');
-        $this->object->setReserved(true);
+        $this->object->setPriority(Task::PRIORITY_HIGH);
+        $this->object->setUniqueId('SomeUniqueId');
 
         $serialized     = serialize($this->object);
         $unserialized   = unserialize($serialized);
@@ -278,6 +282,8 @@ class TaskTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('TestTask', $unserialized->getName());
         $this->assertEquals('methodName', $unserialized->getMethodName());
         $this->assertSame($data, $unserialized->getData());
-        $this->assertFalse($unserialized->isReserved());
+        $this->assertEquals(3, $unserialized->getPriority());
+        $this->assertTrue($unserialized->isUnique());
+        $this->assertEquals('SomeUniqueId', $unserialized->getUniqueId());
     }
 }

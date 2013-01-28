@@ -34,13 +34,6 @@ class Worker
     protected $_whitelistedTasks = array();
 
     /**
-     * Skip doing these tasks
-     *
-     * @var array
-     */
-    protected $_blacklistedTasks = array();
-
-    /**
      *
      * @var Queue
      */
@@ -91,74 +84,26 @@ class Worker
 
     /**
      *
-     * @param string|Task $task
-     * @return boolean
-     */
-    public function isWhitelisted($task)
-    {
-        if ($task instanceof Task) {
-            $task = $task->getName();
-        }
-
-        return in_array($task, $this->_whitelistedTasks);
-    }
-
-    /**
-     *
-     * @param string $taskName
+     * @param array $tasks
      *
      * @return Worker
-     * @throws Exception
      */
-    public function setWhitelistedTask($taskName)
+    public function setWhitelistedTasks(array $tasks)
     {
-        if (!empty($this->_blacklistedTasks)) {
-            throw new Exception('Can not whitelist task if blacklisted tasks exist');
-        }
-
-        $this->_whitelistedTasks[] = $taskName;
+        $this->_whitelistedTasks = $tasks;
 
         return $this;
     }
 
     /**
      *
-     * @return array
-     */
-    public function getBlacklistedTasks()
-    {
-        return $this->_blacklistedTasks;
-    }
-
-    /**
-     *
-     * @param string|Task $task
-     *
-     * @return boolean
-     */
-    public function isBlacklisted($task)
-    {
-        if ($task instanceof Task) {
-            $task = $task->getName();
-        }
-
-        return in_array($task, $this->_blacklistedTasks);
-    }
-
-    /**
-     *
      * @param string $taskName
      *
      * @return Worker
-     * @throws Exception
      */
-    public function setBlacklistedTask($taskName)
+    public function addWhitelistedTask($taskName)
     {
-        if (!empty($this->_whitelistedTasks)) {
-            throw new Exception('Can not blacklist task if whitelisted tasks exist');
-        }
-
-        $this->_blacklistedTasks[] = $taskName;
+        $this->_whitelistedTasks[] = $taskName;
 
         return $this;
     }
@@ -170,7 +115,7 @@ class Worker
     public function getQueue()
     {
         if (null === $this->_queue) {
-            $this->_queue = new Queue;
+            $this->_queue = Queue::get();
         }
 
         return $this->_queue;
@@ -197,41 +142,24 @@ class Worker
         // Start timing
         $this->_startTime();
 
+        $params = array(
+            'whitelist' => $this->getWhitelistedTasks(),
+        );
+
         while (true) {
 
-            if ($this->getQueue()->isEmpty()) {
+            if (null === ($task = $this->getQueue()->getTask($params))) {
                 $this->_sleep();
                 continue;
             }
 
-            $tasks = $this->getQueue()->getTasks();
-
-            foreach ($tasks as $task) {
-                // Get next task
-                if ($task->isReserved()) {
-                    continue;
-                }
-
-                // Can we run this task? If we have whitelisted tasks, do only those,
-                // If not, do any task that is not blacklisted
-                if (
-                    (!empty($this->_whitelistedTasks) && !$this->isWhitelisted($task)) ||
-                    $this->isBlacklisted($task)
-                ) {
-                    continue;
-                }
-
-                // Ok, we can run the task, reserve the task
-                $task->setReserved(true);
-
-                try {
-                    $this->_runTask($task);
-                } catch (\Exception $e) {
-                    echo $e->getMessage();
-                }
+            try {
+                $this->_runTask($task);
+            } catch (\Exception $e) {
+                echo $e->getMessage();
             }
 
-            // After clearing the batch, sleep
+            // After working, sleep
             $this->_sleep();
 
             if (defined('TESTING_MODE') && TESTING_MODE === true) {
