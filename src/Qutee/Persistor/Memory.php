@@ -24,6 +24,13 @@ class Memory implements PersistorInterface
     private $_storage = array();
 
     /**
+     * Array for unique tasks
+     *
+     * @var array
+     */
+    private $_uniqueTasks = array();
+
+    /**
      *
      * @return array
      */
@@ -54,50 +61,66 @@ class Memory implements PersistorInterface
      */
     public function addTask(\Qutee\Task $task)
     {
-        $this->_storage[] = $task;
+        $key = $this->_createKey($task);
+
+        // Check if the task is unique and already exists
+        if ($task->isUnique() && array_key_exists($key, $this->_uniqueTasks)) {
+            return $this;
+        }
+
+        $this->_uniqueTasks[$key] = true;
+
+        $this->_storage[] = serialize($task);
 
         return $this;
     }
 
     /**
      *
-     * @param array $params
+     * @param int $priority
      *
      * @return \Qutee\Task
      */
-    public function getTask(array $params = array())
+    public function getTask($priority = null)
     {
-        if (!empty($params['whitelist'])) {
+        if (null !== $priority) {
             foreach ($this->_storage as $k => $task) {
-                if (in_array($task->getName(), $params['whitelist'])) {
+                $task = unserialize($task);
+                if ($task->getPriority() == $priority) {
                     unset($this->_storage[$k]);
                     return $task;
                 }
             }
         } else {
-            return array_shift($this->_storage);
+            $task = array_shift($this->_storage);
+
+            if (null !== $task) {
+                $task = unserialize($task);
+            }
+
+            return $task;
         }
     }
 
     /**
      *
-     * @param array $params
+     * @param int $priority
      *
      * @return array
      */
-    public function getTasks(array $params = array())
+    public function getTasks($priority = null)
     {
-        if (!empty($params['whitelist'])) {
-            $tasks = array();
-            foreach ($this->_storage as $k => $task) {
-                if (in_array($task->getName(), $params['whitelist'])) {
-                    $tasks[] = $task;
-                }
+        $tasks = array();
+        foreach ($this->_storage as $task) {
+            $task = unserialize($task);
+            if (null !== $priority && $task->getPriority() != $priority) {
+                continue;
             }
-            return $tasks;
-        } else {
-            return $this->_storage;
+
+            $tasks[] = $task;
         }
+
+        return $tasks;
     }
 
 
@@ -111,5 +134,23 @@ class Memory implements PersistorInterface
         $this->_storage = array();
 
         return true;
+    }
+
+
+    /**
+     *
+     * @param \Qutee\Task $task
+     *
+     * @return string
+     */
+    protected function _createKey(\Qutee\Task $task)
+    {
+        if ($task->isUnique()) {
+            $key = sprintf('task:%s:%s', $task->getName(), $task->getUniqueId());
+        } else {
+            $key = sprintf('task:%s:%s', $task->getName(), uniqid('', true));
+        }
+
+        return $key;
     }
 }

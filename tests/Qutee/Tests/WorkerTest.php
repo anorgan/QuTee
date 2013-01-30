@@ -50,14 +50,29 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \Qutee\Worker::getWhitelistedTasks
-     * @covers \Qutee\Worker::addWhitelistedTask
+     * @covers \Qutee\Worker::setPriority
+     * @expectedException \InvalidArgumentException
      */
-    public function testCanWhitelistTask()
+    public function testSettingInvalidPriorityThrowsAnException()
     {
-        $this->assertEmpty($this->object->getWhitelistedTasks());
-        $this->object->addWhitelistedTask('TestTask');
-        $this->assertTrue(in_array('TestTask', $this->object->getWhitelistedTasks()));
+        $this->object->setPriority('SuperCool priority');
+    }
+
+    /**
+     * @covers \Qutee\Worker::getPriority
+     * @covers \Qutee\Worker::setPriority
+     */
+    public function testCanSetAndGetPriority()
+    {
+        $this->assertNull($this->object->getPriority());
+        $this->object->setPriority(Task::PRIORITY_HIGH);
+        $this->assertEquals(Task::PRIORITY_HIGH, $this->object->getPriority());
+
+        $this->object->setPriority(Task::PRIORITY_LOW);
+        $this->assertEquals(Task::PRIORITY_LOW, $this->object->getPriority());
+
+        $this->object->setPriority(null);
+        $this->assertNull($this->object->getPriority());
     }
 
     /**

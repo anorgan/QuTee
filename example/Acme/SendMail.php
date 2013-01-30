@@ -15,8 +15,9 @@ class SendMail implements TaskInterface
 
     public function run()
     {
-        mail($this->_data['to'], $this->_data['subject'], $this->_data['text'], 'From:'. $this->_data['from']);
-
+        $fp = fopen(__DIR__ .'/../mail.log', 'a');
+        fwrite($fp, json_encode($this->_data, JSON_PRETTY_PRINT) . PHP_EOL);
+        fclose($fp);
         return true;
     }
 

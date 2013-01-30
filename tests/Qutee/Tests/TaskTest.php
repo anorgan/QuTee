@@ -186,8 +186,20 @@ class TaskTest extends \PHPUnit_Framework_TestCase
      */
     public function testCanSetAndGetUniqueId()
     {
+        $this->object->setName('Some Name');
         $this->object->setUniqueId('some_unique_id');
-        $this->assertEquals('some_unique_id', $this->object->getUniqueId());
+
+        $uniqueId = md5('Some Namesome_unique_id');
+
+        $this->assertEquals($uniqueId, $this->object->getUniqueId());
+    }
+
+    /**
+     * @covers \Qutee\Task::getUniqueId
+     */
+    public function testGettingUniqueIdReturnsFalseIfNotSet()
+    {
+        $this->assertFalse($this->object->getUniqueId());
     }
 
     /**
@@ -200,12 +212,12 @@ class TaskTest extends \PHPUnit_Framework_TestCase
         $data = array(
             'test' => 'data'
         );
-        $task = new Task('TaskName', $data, 'methodName', Task::PRIORITY_HIGH, 'unique_identifier');
+        $task = new Task('TaskName', $data, Task::PRIORITY_HIGH, 'unique_identifier', 'methodName');
         $this->assertEquals('TaskName', $task->getName());
         $this->assertEquals($data, $task->getData());
         $this->assertEquals('methodName', $task->getMethodName());
         $this->assertEquals(3, $task->getPriority());
-        $this->assertEquals('unique_identifier', $task->getUniqueId());
+        $this->assertEquals(md5('TaskNameunique_identifier'), $task->getUniqueId());
     }
 
     /**
@@ -252,11 +264,13 @@ class TaskTest extends \PHPUnit_Framework_TestCase
         $data = array(
             'test' => 'data'
         );
-        Task::create('TestTask', $data, 'methodName');
+        Task::create('TestTask', $data, Task::PRIORITY_LOW, 'unq', 'methodName');
 
         $task = $queue->getTask();
         $this->assertInstanceOf('\Qutee\Task', $task);
         $this->assertEquals('TestTask', $task->getName());
+        $this->assertEquals(Task::PRIORITY_LOW, $task->getPriority());
+        $this->assertEquals(md5('TestTaskunq'), $task->getUniqueId());
         $this->assertEquals('methodName', $task->getMethodName());
         $this->assertSame($data, $task->getData());
     }
@@ -284,6 +298,6 @@ class TaskTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($data, $unserialized->getData());
         $this->assertEquals(3, $unserialized->getPriority());
         $this->assertTrue($unserialized->isUnique());
-        $this->assertEquals('SomeUniqueId', $unserialized->getUniqueId());
+        $this->assertEquals(md5('TestTaskSomeUniqueId'), $unserialized->getUniqueId());
     }
 }

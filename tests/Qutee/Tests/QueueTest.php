@@ -25,6 +25,20 @@ class QueueTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers \Qutee\Queue::setPersistor
+     * @covers \Qutee\Queue::getPersistor
+     */
+    public function testGettingAndSettingPersistor()
+    {
+        $persistor = $this->object->getPersistor();
+        $this->assertInstanceOf('\\Qutee\\Persistor\\Memory', $persistor);
+
+        $this->object->setPersistor(new \Qutee\Persistor\Redis);
+        $persistor = $this->object->getPersistor();
+        $this->assertInstanceOf('\\Qutee\\Persistor\\Redis', $persistor);
+    }
+
+    /**
      * @covers \Qutee\Queue::getTask
      */
     public function testGettingTaskWithEmptyQueueReturnsNull()
@@ -65,7 +79,7 @@ class QueueTest extends \PHPUnit_Framework_TestCase
      */
     public function testAddingTask()
     {
-        $task = $this->getMock('Qutee\Task');
+        $task = new \Qutee\Task;
         $this->object->addTask($task);
     }
 
@@ -78,7 +92,7 @@ class QueueTest extends \PHPUnit_Framework_TestCase
         $tasks = $this->object->getTasks();
         $this->assertEmpty($tasks);
 
-        $task = $this->getMock('Qutee\Task');
+        $task = new \Qutee\Task;
         $this->object->addTask($task);
 
         $tasks = $this->object->getTasks();
@@ -102,24 +116,42 @@ class QueueTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers \Qutee\Queue::addTask
+     */
+    public function testAddingUniqueTaskAddsOnlyOneTime()
+    {
+        $task = new \Qutee\Task;
+        $task->setName('test');
+        $task->setUniqueId('test');
+
+        $this->object->addTask($task);
+        $this->object->addTask($task);
+
+        $tasks = $this->object->getTasks();
+        $this->assertTrue(count($tasks) == 1);
+        $outputTask = reset($tasks);
+        $this->assertEquals($outputTask->getName(), $task->getName());
+    }
+
+    /**
      * @covers \Qutee\Queue::getTask
      */
-    public function testGettingTaskObeyesWhitelist()
+    public function testGettingTaskQueriesGivenPriority()
     {
         $task1 = new Task('task1');
+        $task1->setPriority(Task::PRIORITY_HIGH);
+
         $task2 = new Task('task2');
+        $task2->setPriority(Task::PRIORITY_LOW);
 
         $this->object
                 ->addTask($task1)
                 ->addTask($task2);
 
-        $params = array(
-            'whitelist' => array('task2')
-        );
-        $outputTask1 = $this->object->getTask($params);
-        $outputTask2 = $this->object->getTask($params);
+        $outputTask1 = $this->object->getTask(Task::PRIORITY_LOW);
+        $outputTask2 = $this->object->getTask(Task::PRIORITY_LOW);
 
-        $this->assertSame($outputTask1, $task2);
+        $this->assertEquals($outputTask1->getName(), $task2->getName());
         $this->assertNull($outputTask2);
 
     }
@@ -127,22 +159,39 @@ class QueueTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers \Qutee\Queue::getTasks
      */
-    public function testGettingTasksObeyesWhitelist()
+    public function testGettingTasksQueriesGivenPriority()
     {
         $task1 = new Task('task1');
+        $task1->setPriority(Task::PRIORITY_HIGH);
+
         $task2 = new Task('task2');
+        $task2->setPriority(Task::PRIORITY_LOW);
 
         $this->object
                 ->addTask($task1)
                 ->addTask($task2);
 
-        $params = array(
-            'whitelist' => array('task2')
-        );
-        $outputTasks = $this->object->getTasks($params);
+        $outputTasks = $this->object->getTasks(Task::PRIORITY_LOW);
 
         $this->assertTrue(count($outputTasks) == 1);
-        $this->assertSame(reset($outputTasks), $task2);
+        $outputTask = reset($outputTasks);
+        $this->assertEquals($outputTask->getName(), $task2->getName());
+    }
+
+    /**
+     * @covers \Qutee\Queue::getTask
+     */
+    public function testGettingTaskObeysPriority()
+    {
+        $this->markTestIncomplete('Implement me, please');
+    }
+
+    /**
+     * @covers \Qutee\Queue::getTasks
+     */
+    public function testGettingTasksObeysPriority()
+    {
+        $this->markTestIncomplete('Implement me, please');
     }
 
     /**

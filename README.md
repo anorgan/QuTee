@@ -9,46 +9,49 @@ Example
 -------
 ``` php
 <?php
+/*
+ * Bootstrap / DIC
+ */
+$redisParams    = array(
+    'host'  => '127.0.0.1',
+    'port'  => 6379
+);
+$queuePersistor = new Qutee\Persistor\Redis($redisParams);
 
-require_once __DIR__ . "/../vendor/autoload.php";
+$queue          = new Queue();
+$queue->setPersistor($queuePersistor);
+
+/*
+ * App
+ */
 
 // Create Task
 $task = new Task;
 $task
-    ->setName('Acme/SendMail')
+    ->setName('Acme/DeleteFolder')
     ->setData(array(
-        'to'        => 'you@yourdomain.com',
-        'from'      => 'qutee@nowhere.tld',
-        'subject'   => 'Hi!',
-        'text'      => 'It\'s your faithful QuTee!'
-    ));
+        'path'      => '/usr',
+    ))
+    ->setPriority(Task::PRIORITY_HIGH);
 
 // Queue it
-$queue = new Queue();
 $queue->addTask($task);
 
 // Or do this in one go
-Task::create('Acme/SendMail', array(
-    'to'        => 'you@yourdomain.com',
-    'from'      => 'qutee@nowhere.tld',
-    'subject'   => 'Hi!',
-    'text'      => 'It\'s your faithful QuTee!'
-));
+Task::create('Acme/DeleteFolder', array('path' => '/usr'), Task::PRIORITY_HIGH);
 ```
 
 ``` php
 <?php
-// Worker - process queue
-
+// Worker - process all queues (folder_deleter.php)
 $worker = new Worker;
 $worker->run();
 
 // Or, with more configuration
 $worker = new Worker;
 $worker
-    ->setInterval(30)                           // Run every 30 minutes
-    ->setWhitelistedTask('Acme/DeleteCache')    // Will only do this tasks
-    ->setWhitelistedTask('Acme/SendMail')       // Will only do this tasks
+    ->setInterval(30)                           // Run every 30 seconds
+    ->setPriority(Task::PRIORITY_HIGH)          // Will only do tasks of this priority
     ->run();
 
 ```
@@ -56,13 +59,12 @@ $worker
 Disclaimer
 ----------
 
-- Don't use it yet, don't know what version this is :)
-- Will be extremely simple, does not pretend to replace 0MQ, Gearman, Redis and such
+- Worker does not fork yet, could be highly unstable, use supervisord or similar
+- Extremely simple, does not pretend to replace 0MQ, Gearman, Redis and such
 
 [TODO](https://github.com/anorgan/QuTee/issues?milestone=1&state=open)
 ----
-- Add queue persistor using adapters (DB, MongoDB, Redis, Memcache)
+- Add queue persistor using adapters (DB, MongoDB, Memcache)
 - Make worker spawn child processes for running tasks
-- Add method name property to task, together with current default one, so it is easier to set it
 - Add logging
 - Add reporting dashboard

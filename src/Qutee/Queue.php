@@ -65,24 +65,24 @@ class Queue
 
     /**
      *
-     * @param array $params
+     * @param int $priority
      *
      * @return \Qutee\Task
      */
-    public function getTask($params = array())
+    public function getTask($priority = null)
     {
-        return $this->getPersistor()->getTask($params);
+        return $this->getPersistor()->getTask($priority);
     }
 
     /**
      *
-     * @param array $params
+     * @param int $priority
      *
      * @return array
      */
-    public function getTasks($params = array())
+    public function getTasks($priority = null)
     {
-        return $this->getPersistor()->getTasks($params);
+        return $this->getPersistor()->getTasks($priority);
     }
 
     /**

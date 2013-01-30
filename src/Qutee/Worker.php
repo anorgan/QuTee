@@ -15,23 +15,23 @@ use Qutee\TaskInterface;
 class Worker
 {
     /**
-     * Run every 5 minutes by default
+     * Run every 5 seconds by default
      */
     const DEFAULT_INTERVAL = 5;
 
     /**
-     * Run every X minutes
+     * Run every X seconds
      *
      * @var int
      */
     protected $_interval = self::DEFAULT_INTERVAL;
 
     /**
-     * Do only these tasks
+     * Do only tasks with this priority or all if priority is null
      *
-     * @var array
+     * @var int
      */
-    protected $_whitelistedTasks = array();
+    protected $_priority;
 
     /**
      *
@@ -77,33 +77,26 @@ class Worker
      *
      * @return array
      */
-    public function getWhitelistedTasks()
+    public function getPriority()
     {
-        return $this->_whitelistedTasks;
+        return $this->_priority;
     }
 
     /**
      *
-     * @param array $tasks
+     * @param int $priority
      *
      * @return Worker
-     */
-    public function setWhitelistedTasks(array $tasks)
-    {
-        $this->_whitelistedTasks = $tasks;
-
-        return $this;
-    }
-
-    /**
      *
-     * @param string $taskName
-     *
-     * @return Worker
+     * @throws \InvalidArgumentException
      */
-    public function addWhitelistedTask($taskName)
+    public function setPriority($priority)
     {
-        $this->_whitelistedTasks[] = $taskName;
+        if ($priority !== null && !is_int($priority)) {
+            throw new \InvalidArgumentException('Priority must be null or an integer');
+        }
+
+        $this->_priority = $priority;
 
         return $this;
     }
@@ -136,19 +129,18 @@ class Worker
 
     /**
      * Run the worker, get tasks of the queue, run them
+     *
+     * @throws \Exception
      */
     public function run()
     {
         // Start timing
         $this->_startTime();
 
-        $params = array(
-            'whitelist' => $this->getWhitelistedTasks(),
-        );
-
         while (true) {
 
-            if (null === ($task = $this->getQueue()->getTask($params))) {
+            // Get next task with set priority (or any task if priority not set)
+            if (null === ($task = $this->getQueue()->getTask($this->getPriority()))) {
                 $this->_sleep();
                 continue;
             }
@@ -180,11 +172,9 @@ class Worker
     /**
      * Get passed time
      *
-     * @param boolean $minutes - if true, returns minutes, else seconds
-     *
      * @return float
      */
-    protected function _getPassedTime($minutes = false)
+    protected function _getPassedTime()
     {
         return abs(microtime(true) - $this->_startTime);
     }
@@ -202,8 +192,8 @@ class Worker
         }
 
         // Time ... enough
-        if ($this->_getPassedTime(true) <= $this->_interval) {
-            $remainder = ($this->_interval * 60) - $this->_getPassedTime();
+        if ($this->_getPassedTime() <= $this->_interval) {
+            $remainder = ($this->_interval) - $this->_getPassedTime();
             sleep($remainder);
         } // Task took more than the interval, don't sleep
     }

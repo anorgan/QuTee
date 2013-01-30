@@ -59,15 +59,19 @@ class Task
      *
      * @var string
      */
-    protected $_unique_id;
+    protected $_uniqueId;
 
     /**
      *
      * @param string $name
+     * @param array $data
+     * @param int $priority
+     * @param string $unique_id
+     * @param string $methodName
      *
      * @param array $data
      */
-    public function __construct($name = null, $data = array(), $methodName = null, $priority = self::PRIORITY_NORMAL, $unique_id = null)
+    public function __construct($name = null, $data = array(), $priority = self::PRIORITY_NORMAL, $unique_id = null, $methodName = null)
     {
         if (null !== $name) {
             $this->setName($name);
@@ -229,22 +233,26 @@ class Task
 
     /**
      *
-     * @return string
+     * @return string|boolean
      */
     public function getUniqueId()
     {
-        return $this->_unique_id;
+        if (!$this->isUnique()) {
+            return false;
+        }
+
+        return md5($this->getName() . $this->_uniqueId);
     }
 
     /**
      *
-     * @param string $unique_id
+     * @param string $uniqueId
      *
      * @return \Qutee\Task
      */
-    public function setUniqueId($unique_id)
+    public function setUniqueId($uniqueId)
     {
-        $this->_unique_id = $unique_id;
+        $this->_uniqueId = $uniqueId;
 
         return $this;
     }
@@ -256,7 +264,7 @@ class Task
      */
     public function isUnique()
     {
-        return !is_null($this->_unique_id);
+        return !is_null($this->_uniqueId);
     }
 
     /**
@@ -265,24 +273,24 @@ class Task
      */
     public function __sleep()
     {
-        return array('_name', '_data', '_methodName', '_priority', '_unique_id');
+        return array('_name', '_data', '_methodName', '_priority', '_uniqueId');
     }
 
     /**
      *
      * @param string $name
      * @param array $data
-     * @param string $methodName
      * @param int $priority
      * @param string $unique_id
+     * @param string $methodName
      *
      * @return Task
      */
-    public static function create($name, $data = array(), $methodName = null, $priority = self::PRIORITY_NORMAL, $unique_id = null)
+    public static function create($name, $data = array(), $priority = self::PRIORITY_NORMAL, $unique_id = null, $methodName = null)
     {
 
         $queue  = Queue::get();
-        $task   = new self($name, $data, $methodName, $priority, $unique_id);
+        $task   = new self($name, $data, $priority, $unique_id, $methodName);
         $queue->addTask($task);
 
         return $task;

@@ -38,20 +38,20 @@ interface PersistorInterface
     /**
      * Get next task from the queue
      *
-     * @param array $params:
-     *  whitelist: return only tasks with those names
+     * @param int $priority Return only tasks with this priority
      *
-     *
-     * @return \Qutee\Task
+     * @return \Qutee\Task|null
      */
-    public function getTask(array $params = array());
+    public function getTask($priority = null);
 
     /**
      * Get all tasks from the queue
      *
+     * @param int $priority Return only tasks with this priority
+     *
      * @return array array of tasks
      */
-    public function getTasks(array $params = array());
+    public function getTasks($priority = null);
 
     /**
      * Clear all tasks from queue
