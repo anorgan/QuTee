@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Qutee by anorgan</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/anorgan/QuTee">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/anorgan/QuTee/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/anorgan/QuTee/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Qutee</h1>
+          <p>PHP Background Jobs (Tasks) Manager</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/anorgan">anorgan</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>QuTee</h1>
+
+<p><a href="https://travis-ci.org/anorgan/QuTee"><img src="https://travis-ci.org/anorgan/QuTee.png" alt="Build Status"></a></p>
+
+<p>Simple queue manager and task processor for PHP</p>
+
+<h2>Example</h2>
+
+<div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
+<span class="cm">/*</span>
+<span class="cm"> * Bootstrap / DIC</span>
+<span class="cm"> */</span>
+<span class="nv">$redisParams</span>    <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+    <span class="s1">'host'</span>  <span class="o">=&gt;</span> <span class="s1">'127.0.0.1'</span><span class="p">,</span>
+    <span class="s1">'port'</span>  <span class="o">=&gt;</span> <span class="mi">6379</span>
+<span class="p">);</span>
+<span class="nv">$queuePersistor</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Qutee\Persistor\Redis</span><span class="p">(</span><span class="nv">$redisParams</span><span class="p">);</span>
+
+<span class="nv">$queue</span>          <span class="o">=</span> <span class="k">new</span> <span class="nx">Queue</span><span class="p">();</span>
+<span class="nv">$queue</span><span class="o">-&gt;</span><span class="na">setPersistor</span><span class="p">(</span><span class="nv">$queuePersistor</span><span class="p">);</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * App</span>
+<span class="cm"> */</span>
+
+<span class="c1">// Create Task</span>
+<span class="nv">$task</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Task</span><span class="p">;</span>
+<span class="nv">$task</span>
+    <span class="o">-&gt;</span><span class="na">setName</span><span class="p">(</span><span class="s1">'Acme/DeleteFolder'</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">setData</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">'/usr'</span><span class="p">))</span>
+    <span class="o">-&gt;</span><span class="na">setPriority</span><span class="p">(</span><span class="nx">Task</span><span class="o">::</span><span class="na">PRIORITY_HIGH</span><span class="p">);</span>
+
+<span class="c1">// Queue it</span>
+<span class="nv">$queue</span><span class="o">-&gt;</span><span class="na">addTask</span><span class="p">(</span><span class="nv">$task</span><span class="p">);</span>
+
+<span class="c1">// Or do this in one go</span>
+<span class="nx">Task</span><span class="o">::</span><span class="na">create</span><span class="p">(</span><span class="s1">'Acme/DeleteFolder'</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s1">'/usr'</span><span class="p">),</span> <span class="nx">Task</span><span class="o">::</span><span class="na">PRIORITY_HIGH</span><span class="p">);</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
+<span class="c1">// Worker - process all queues (folder_deleter.php)</span>
+<span class="nv">$worker</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Worker</span><span class="p">;</span>
+<span class="nv">$worker</span><span class="o">-&gt;</span><span class="na">run</span><span class="p">();</span>
+
+<span class="c1">// Or, with more configuration</span>
+<span class="nv">$worker</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Worker</span><span class="p">;</span>
+<span class="nv">$worker</span>
+    <span class="o">-&gt;</span><span class="na">setInterval</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>                   <span class="c1">// Run every 30 seconds</span>
+    <span class="o">-&gt;</span><span class="na">setPriority</span><span class="p">(</span><span class="nx">Task</span><span class="o">::</span><span class="na">PRIORITY_HIGH</span><span class="p">)</span>  <span class="c1">// Will only do tasks of this priority</span>
+    <span class="o">-&gt;</span><span class="na">run</span><span class="p">();</span>
+
+</pre></div>
+
+<h2>Disclaimer</h2>
+
+<ul>
+<li>Worker does not fork yet, could be highly unstable, use supervisord or similar</li>
+<li>Extremely simple, does not pretend to replace 0MQ, Gearman, Redis and such</li>
+</ul><h2><a href="https://github.com/anorgan/QuTee/issues?milestone=1&amp;state=open">TODO</a></h2>
+
+<ul>
+<li>Add queue persistor using adapters (DB, MongoDB, Memcache)</li>
+<li>Make worker spawn child processes for running tasks</li>
+<li>Add logging</li>
+<li>Add reporting dashboard</li>
+</ul>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
