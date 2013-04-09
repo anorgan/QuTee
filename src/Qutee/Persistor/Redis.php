@@ -149,7 +149,7 @@ class Redis implements PersistorInterface
      */
     public function clear()
     {
-        return $this->_getRedis->flushDB();
+        return $this->_getRedis()->flushDB();
     }
 
     /**
