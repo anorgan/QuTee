@@ -59,12 +59,11 @@ $worker
 Disclaimer
 ----------
 
-- Worker does not fork yet, could be highly unstable, use supervisord or similar
-- Extremely simple, does not pretend to replace 0MQ, Gearman, Redis and such
+- Use supervisord or similar for process monitoring / babysitting
+- Extremely simple, does not pretend to replace Gearman, but pretends to simplify background jobs processing
 
 [TODO](https://github.com/anorgan/QuTee/issues?milestone=1&state=open)
 ----
-- Add queue persistor using adapters (DB, MongoDB, Memcache)
-- Make worker spawn child processes for running tasks
+- Add queue persistor using adapters (MySQL / PostgreSQL, Redis, Beanstalkd, MongoDB)
 - Add logging
 - Add reporting dashboard
