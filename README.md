@@ -45,14 +45,28 @@ Task::create('Acme/DeleteFolder', array('path' => '/usr'), Task::PRIORITY_HIGH);
 <?php
 // Worker - process all queues (folder_deleter.php)
 $worker = new Worker;
-$worker->run();
+while (true) {
+    try {
+        $worker->run();
+    } catch (Exception $e) {
+        echo $e->getMessage();
+    }
+}
 
 // Or, with more configuration
 $worker = new Worker;
 $worker
     ->setInterval(30)                           // Run every 30 seconds
     ->setPriority(Task::PRIORITY_HIGH)          // Will only do tasks of this priority
-    ->run();
+    ;
+
+while (true) {
+    try {
+        $worker->run();
+    } catch (Exception $e) {
+        echo $e->getMessage();
+    }
+}
 
 ```
 
@@ -64,6 +78,6 @@ Disclaimer
 
 [TODO](https://github.com/anorgan/QuTee/issues?milestone=1&state=open)
 ----
-- Add queue persistor using adapters (MySQL / PostgreSQL, Redis, Beanstalkd, MongoDB)
+- Add queue persistor using more adapters (PDO for MySQL / PostgreSQL, Beanstalkd, MongoDB)
 - Add logging
 - Add reporting dashboard

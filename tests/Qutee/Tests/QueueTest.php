@@ -23,6 +23,19 @@ class QueueTest extends \PHPUnit_Framework_TestCase
         $this->object = new Queue;
         $this->object->setPersistor(new \Qutee\Persistor\Memory);
     }
+    
+    /**
+     * @covers \Qutee\Queue::__construct
+     * @covers \Qutee\Queue::setInstance
+     * @covers \Qutee\Queue::get
+     * @runInSeparateProcess
+     */
+    public function testSettingAndGettingInstance()
+    {
+        $instance = new Queue();
+        Queue::setInstance($instance);
+        $this->assertSame($instance, Queue::get());
+    }
 
     /**
      * @covers \Qutee\Queue::setPersistor
@@ -176,22 +189,6 @@ class QueueTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(count($outputTasks) == 1);
         $outputTask = reset($outputTasks);
         $this->assertEquals($outputTask->getName(), $task2->getName());
-    }
-
-    /**
-     * @covers \Qutee\Queue::getTask
-     */
-    public function testGettingTaskObeysPriority()
-    {
-        $this->markTestIncomplete('Implement me, please');
-    }
-
-    /**
-     * @covers \Qutee\Queue::getTasks
-     */
-    public function testGettingTasksObeysPriority()
-    {
-        $this->markTestIncomplete('Implement me, please');
     }
 
     /**

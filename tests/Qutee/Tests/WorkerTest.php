@@ -23,12 +23,13 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
     {
         Queue::factory();
         $this->object = new Worker;
+        $this->object->setInterval(0.5);
     }
 
     public function tearDown()
     {
         // I know, I know...
-        Queue::get()->clear();
+        //Queue::get()->clear();
     }
 
     /**
@@ -36,7 +37,8 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
      */
     public function testDefaultInterval()
     {
-        $this->assertEquals(Worker::DEFAULT_INTERVAL, $this->object->getInterval());
+        $object = new Worker;
+        $this->assertEquals(Worker::DEFAULT_INTERVAL, $object->getInterval());
     }
 
     /**
@@ -74,6 +76,17 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
         $this->object->setPriority(null);
         $this->assertNull($this->object->getPriority());
     }
+    
+    /**
+     * @covers \Qutee\Worker::setQueue
+     * @covers \Qutee\Worker::getQueue
+     */
+    public function testCanSetAndGetQueue()
+    {
+        $queue = $this->getMock('\Qutee\Queue');
+        $this->object->setQueue($queue);
+        $this->assertSame($queue, $this->object->getQueue());        
+    }
 
     /**
      * @covers \Qutee\Worker::getQueue
@@ -84,4 +97,143 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('\Qutee\Queue', $queue);
     }
 
+    /**
+     * @covers \Qutee\Worker::run
+     * @covers \Qutee\Worker::_runTask
+     * @covers \Qutee\Worker::_sleep
+     * @covers \Qutee\Worker::_startTime
+     * @covers \Qutee\Worker::_getPassedTime
+     */
+    public function testCallingRunRequestsTaskForSetPriority()
+    {
+        $priority   = Task::PRIORITY_LOW;
+        $task       = $this->getMock('\Qutee\Task', array('getClassName'));
+
+        $taskMockClass = $this->getMockClass('TaskInterface', array('run'));
+
+        $task->expects($this->once())->method('getClassName')->will($this->returnValue($taskMockClass));
+
+        $queue      = $this->getMock('\Qutee\Queue', array('getTask'));
+
+        $queue
+            ->expects($this->once())
+            ->method('getTask')
+            ->with($priority)
+            ->will($this->returnValue($task));
+
+        $this->object->setPriority($priority);
+        $this->object->run();
+        
+        $this->assertTrue(TRUE);
+    }
+    
+    /**
+     * @covers \Qutee\Worker::run
+     * @covers \Qutee\Worker::_runTask
+     * @covers \Qutee\Worker::_sleep
+     * @covers \Qutee\Worker::_startTime
+     * @covers \Qutee\Worker::_getPassedTime
+     */
+    public function testCallingRunReturnsTaskWhichRan()
+    {
+        $priority   = Task::PRIORITY_LOW;
+        $task       = $this->getMock('\Qutee\Task', array('getClassName'));
+
+        $taskMockClass = $this->getMockForAbstractClass('\Qutee\TaskInterface', array('run'));
+
+        $task->expects($this->once())->method('getClassName')->will($this->returnValue(get_class($taskMockClass)));
+
+        $queue      = $this->getMock('\Qutee\Queue', array('getTask'));
+
+        $queue
+            ->expects($this->once())
+            ->method('getTask')
+            ->with($priority)
+            ->will($this->returnValue($task));
+
+        $this->object->setPriority($priority);
+        $ranTask = $this->object->run();
+
+        $this->assertSame($task, $ranTask);
+    }
+
+    /**
+     * @covers \Qutee\Worker::run
+     * @covers \Qutee\Worker::_runTask
+     * @covers \Qutee\Worker::_sleep
+     * @covers \Qutee\Worker::_startTime
+     * @covers \Qutee\Worker::_getPassedTime
+     */
+    public function testCallingRunReturnsVoidIfNoTasksAreFound()
+    {
+        $queue      = $this->getMock('\Qutee\Queue', array('getTask'));
+        $worker     = $this->getMock('\Qutee\Worker', array('_runTask'));
+
+        $queue
+            ->expects($this->once())
+            ->method('getTask')
+            ->with($worker->getPriority())
+            ->will($this->returnValue(null));
+
+        $worker->expects($this->never())->method('_runTask');
+        $worker->run();
+    }
+
+    /**
+     * @covers \Qutee\Worker::run
+     * @covers \Qutee\Worker::_sleep
+     * @covers \Qutee\Worker::_startTime
+     * @covers \Qutee\Worker::_getPassedTime
+     */
+    public function testCallingRunSleepsUpToDefinedInterval()
+    {
+        $priority   = Task::PRIORITY_LOW;
+        $task       = $this->getMock('\Qutee\Task', array('getClassName'));
+
+        $taskMockClass = $this->getMockClass('TaskInterface', array('run'));
+
+        $task->expects($this->once())->method('getClassName')->will($this->returnValue($taskMockClass));
+
+        $queue      = $this->getMock('\Qutee\Queue', array('getTask'));
+
+        $queue
+            ->expects($this->once())
+            ->method('getTask')
+            ->with($priority)
+            ->will($this->returnValue($task));
+
+        $this->object->setPriority($priority);
+        $this->object->setInterval(0.8337);
+
+        $start  = microtime(true);
+        $this->object->run();
+        $end    = microtime(true) - $start;
+
+        $this->assertEquals(0.8337, $end, '', 0.001);
+    }
+
+    /**
+     * @covers \Qutee\Worker::run
+     * @covers \Qutee\Worker::_runTask
+     * @expectedException \InvalidArgumentException
+     */
+    public function testCallingRunThrowsExceptionIfTaskCanNotRun()
+    {
+        $priority   = Task::PRIORITY_LOW;
+        $task       = $this->getMock('\Qutee\Task', array('getClassName'));
+
+        $task->expects($this->once())->method('getClassName')->will($this->returnValue('UnknownClass'));
+
+        $queue      = $this->getMock('\Qutee\Queue', array('getTask'));
+
+        $queue
+            ->expects($this->once())
+            ->method('getTask')
+            ->with($priority)
+            ->will($this->returnValue($task));
+
+        $this->object->setPriority($priority);
+        
+        $this->object->run();
+    }
 }

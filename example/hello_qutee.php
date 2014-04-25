@@ -52,5 +52,13 @@ Task::create(
 $worker = new Worker;
 $worker
     ->setQueue($queue)
-    ->setPriority(Task::PRIORITY_HIGH)
-    ->run();
+    ->setPriority(Task::PRIORITY_HIGH);
+
+while (true) {
+    try {
+        $worker->run();
+    } catch (Exception $e) {
+        echo $e->getMessage();
+    }
+}
+    

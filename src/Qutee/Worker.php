@@ -130,6 +130,7 @@ class Worker
     /**
      * Run the worker, get tasks of the queue, run them
      *
+     * @return Task|null Task which ran, or null if no task found
      * @throws \Exception
      */
     public function run()
@@ -137,28 +138,17 @@ class Worker
         // Start timing
         $this->_startTime();
 
-        while (true) {
-
-            // Get next task with set priority (or any task if priority not set)
-            if (null === ($task = $this->getQueue()->getTask($this->getPriority()))) {
-                $this->_sleep();
-                continue;
-            }
-
-            try {
-                $this->_runTask($task);
-            } catch (\Exception $e) {
-                echo $e->getMessage();
-            }
-
-            // After working, sleep
-            $this->_sleep();
-
-            if (defined('TESTING_MODE') && TESTING_MODE === true) {
-                // SUT, no need to wait indefinitely
-                break;
-            }
+        // Get next task with set priority (or any task if priority not set)
+        if (null === ($task = $this->getQueue()->getTask($this->getPriority()))) {
+            return;
         }
+
+        $this->_runTask($task);
+
+        // After working, sleep
+        $this->_sleep();
+
+        return $task;
     }
 
     /**
@@ -186,15 +176,10 @@ class Worker
      */
     protected function _sleep()
     {
-        if (defined('TESTING_MODE') && TESTING_MODE === true) {
-            // Don't sleep while running tests, didn't you play Portal!?
-            return;
-        }
-
         // Time ... enough
         if ($this->_getPassedTime() <= $this->_interval) {
             $remainder = ($this->_interval) - $this->_getPassedTime();
-            sleep($remainder);
+            usleep($remainder * 1000000);
         } // Task took more than the interval, don't sleep
     }
 
@@ -217,6 +202,7 @@ class Worker
 
             $taskObject->setData($task->getData());
             $taskObject->run();
+            return $taskObject;
 
         } else {
 
