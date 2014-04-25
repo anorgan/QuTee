@@ -56,9 +56,11 @@ $worker
 
 while (true) {
     try {
-        $worker->run();
+        if (null !== ($task = $worker->run())) {
+            echo 'Ran task: '. $task->getName() . PHP_EOL;
+        }
     } catch (Exception $e) {
-        echo $e->getMessage();
+        echo 'Error: '. $e->getMessage() . PHP_EOL;
     }
 }
     
