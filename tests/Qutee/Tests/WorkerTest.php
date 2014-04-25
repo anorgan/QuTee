@@ -26,12 +26,6 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
         $this->object->setInterval(0.5);
     }
 
-    public function tearDown()
-    {
-        // I know, I know...
-        //Queue::get()->clear();
-    }
-
     /**
      * @covers \Qutee\Worker::getInterval
      */
