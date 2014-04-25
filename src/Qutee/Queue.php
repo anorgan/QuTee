@@ -109,11 +109,13 @@ class Queue
     {
         if (isset($config['persistor'])) {
             $persistorClass = 'Qutee\\Persistor\\'. ucfirst($config['persistor']);
-            if (!class_exists($persistorClass)) {
+            if (class_exists($persistorClass)) {
+                $persistor = new $persistorClass;
+            } elseif (class_exists($config['persistor'])) {
+                $persistor = new $config['persistor'];
+            } else {
                 throw new \InvalidArgumentException(sprintf('Persistor "%s" doesn\'t exist', $config['persistor']));
             }
-
-            $persistor = new $persistorClass;
 
             if (isset($config['options'])) {
                 $persistor->setOptions($config['options']);
