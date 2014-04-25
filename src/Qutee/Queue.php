@@ -113,8 +113,12 @@ class Queue
                 $persistor = new $persistorClass;
             } elseif (class_exists($config['persistor'])) {
                 $persistor = new $config['persistor'];
-            } else {
+            }
+
+            if (!isset($persistor) || !is_object($persistor)) {
                 throw new \InvalidArgumentException(sprintf('Persistor "%s" doesn\'t exist', $config['persistor']));
+            } elseif (!($persistor instanceof Persistor\PersistorInterface)) {
+                throw new \InvalidArgumentException(sprintf('Persistor "%s" does not implement Persistor\PersistorInterface', $config['persistor']));
             }
 
             if (isset($config['options'])) {

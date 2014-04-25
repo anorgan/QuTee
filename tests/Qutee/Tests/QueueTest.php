@@ -28,7 +28,6 @@ class QueueTest extends \PHPUnit_Framework_TestCase
      * @covers \Qutee\Queue::__construct
      * @covers \Qutee\Queue::setInstance
      * @covers \Qutee\Queue::get
-     * @runInSeparateProcess
      */
     public function testSettingAndGettingInstance()
     {
@@ -208,6 +207,27 @@ class QueueTest extends \PHPUnit_Framework_TestCase
         $queue = Queue::factory();
 
         $this->assertInstanceOf('\Qutee\Persistor\Memory', $queue->getPersistor());
+    }
+
+    /**
+     * @covers \Qutee\Queue::factory
+     */
+    public function testCreatingQueueViaFactoryCreatesWithPassedThirdPartyPersistor()
+    {
+        $config = array('persistor' => $this->getMockClass('\Qutee\Persistor\PersistorInterface'));
+        $queue = Queue::factory($config);
+
+        $this->assertInstanceOf('\Qutee\Persistor\PersistorInterface', $queue->getPersistor());
+    }
+
+    /**
+     * @covers \Qutee\Queue::factory
+     * @expectedException \InvalidArgumentException
+     */
+    public function testCreatingQueueViaFactoryThrowsExceptionIfThirdPartyPersistorDoesNotImplementInterface()
+    {
+        $config = array('persistor' => '\SplQueue');
+        $queue = Queue::factory($config);
     }
 
     /**
