@@ -3,7 +3,7 @@ QuTee
 
 [![Build Status](https://travis-ci.org/anorgan/QuTee.png)](https://travis-ci.org/anorgan/QuTee)
 
-Simple queue manager and task processor for PHP
+Simple queue manager and task processor for PHP using Redis or MySQL as backend.
 
 Example
 -------
@@ -17,6 +17,17 @@ $redisParams    = array(
     'port'  => 6379
 );
 $queuePersistor = new Qutee\Persistor\Redis($redisParams);
+
+// or...
+
+$pdoParams    = array(
+    'dsn'       => 'mysql:host=127.0.0.1;dbname=test;charset=utf8',
+    'username'  => 'root',
+    'password'  => '',
+    'table_name'=> 'queue'
+);
+$queuePersistor = new Qutee\Persistor\Pdo();
+$queuePersistor->setOptions($pdoParams);
 
 $queue          = new Queue();
 $queue->setPersistor($queuePersistor);
@@ -43,7 +54,7 @@ Task::create('Acme/DeleteFolder', array('path' => '/usr'), Task::PRIORITY_HIGH);
 
 ``` php
 <?php
-// Worker - process all queues (folder_deleter.php)
+// Worker - process all queues
 $worker = new Worker;
 while (true) {
     try {
@@ -62,22 +73,22 @@ $worker
 
 while (true) {
     try {
-        $worker->run();
+        if (null !== ($task = $worker->run())) {
+            echo 'Ran task: '. $task->getName() . PHP_EOL;
+        }
     } catch (Exception $e) {
-        echo $e->getMessage();
+        echo 'Error: '. $e->getMessage() . PHP_EOL;
     }
 }
-
-```
 
 Disclaimer
 ----------
 
-- Use supervisord or similar for process monitoring / babysitting
-- Extremely simple, does not pretend to replace Gearman, but pretends to simplify background jobs processing
+- Use [supervisord](http://supervisord.org/) or similar for process monitoring / babysitting
+- Extremely simple, but pretends to simplify background jobs processing
 
 [TODO](https://github.com/anorgan/QuTee/issues?milestone=1&state=open)
 ----
-- Add queue persistor using more adapters (PDO for MySQL / PostgreSQL, Beanstalkd, MongoDB)
+- Add queue persistor using more adapters (Beanstalkd, MongoDB)
 - Add logging
 - Add reporting dashboard

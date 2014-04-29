@@ -4,7 +4,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="generator" content="ApiGen 2.8.0" />
 
-	<title>Class Qutee\Persistor\Redis | Qutee</title>
+	<title>Class Qutee\Persistor\Pdo | Qutee</title>
 
 	<script type="text/javascript" src="resources/combined.js?2275062581"></script>
 	<script type="text/javascript" src="elementlist.js?2637421679"></script>
@@ -36,8 +36,8 @@
 			<h3>Classes</h3>
 			<ul>
 				<li><a href="class-Qutee.Persistor.Memory.html">Memory</a></li>
-				<li><a href="class-Qutee.Persistor.Pdo.html">Pdo</a></li>
-				<li class="active"><a href="class-Qutee.Persistor.Redis.html">Redis</a></li>
+				<li class="active"><a href="class-Qutee.Persistor.Pdo.html">Pdo</a></li>
+				<li><a href="class-Qutee.Persistor.Redis.html">Redis</a></li>
 			</ul>
 
 			<h3>Interfaces</h3>
@@ -87,18 +87,25 @@
 	</div>
 
 <div id="content" class="class">
-	<h1>Class Redis</h1>
+	<h1>Class Pdo</h1>
 
 
 	<div class="description">
 	
-<p>Redis</p>
+<p>PDO persistor, use table with columns: name, data, priority</p>
+
+<p>MySQL CREATE TABLE IF NOT EXISTS <code>queue</code> ( <code>id</code> INT NOT
+NULL AUTO_INCREMENT, <code>name</code> VARCHAR(255) NOT NULL,
+<code>method_name</code> VARCHAR(255) NULL, <code>data</code> TEXT NULL,
+<code>priority</code> TINYINT NOT NULL, <code>unique_id</code> VARCHAR(32) NULL,
+<code>created_at</code> DATETIME NOT NULL, <code>is_taken</code> TINYINT(1) NOT
+NULL DEFAULT 0, PRIMARY KEY (<code>id</code>)) ENGINE = InnoDB;</p>
 
 	</div>
 
 	<dl class="tree">
 		<dd style="padding-left:0px">
-<b><span>Qutee\Persistor\Redis</span></b>			
+<b><span>Qutee\Persistor\Pdo</span></b>			
 			 implements 
 				<a href="class-Qutee.Persistor.PersistorInterface.html"><span>Qutee\Persistor\PersistorInterface</span></a>
 			
@@ -121,13 +128,42 @@
 
 				<b>Author:</b>
 				anorgan<br />
-		<b>Located at</b> <a href="source-class-Qutee.Persistor.Redis.html#5-227" title="Go to source code">src/Qutee/Persistor/Redis.php</a><br />
+		<b>Located at</b> <a href="source-class-Qutee.Persistor.Pdo.html#7-229" title="Go to source code">src/Qutee/Persistor/Pdo.php</a><br />
 	</div>
 
 
 
 	<table class="summary" id="methods">
 	<caption>Methods summary</caption>
+	<tr data-order="__construct" id="___construct">
+
+		<td class="attributes"><code>
+			 public 
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#___construct">#</a>
+		<code><a href="source-class-Qutee.Persistor.Pdo.html#40-42" title="Go to source code">__construct</a>( <span>PDO <var>$pdo</var> = <span class="php-keyword1">null</span></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
 	<tr data-order="getOptions" id="_getOptions">
 
 		<td class="attributes"><code>
@@ -139,7 +175,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_getOptions">#</a>
-		<code><a href="source-class-Qutee.Persistor.Redis.html#30-37" title="Go to source code">getOptions</a>( )</code>
+		<code><a href="source-class-Qutee.Persistor.Pdo.html#44-51" title="Go to source code">getOptions</a>( )</code>
 
 		<div class="description short">
 			
@@ -167,14 +203,14 @@
 
 		<td class="attributes"><code>
 			 public 
-			<code><a href="class-Qutee.Persistor.Redis.html">Qutee\Persistor\Redis</a></code>
+			<code><a href="class-Qutee.Persistor.Pdo.html">Qutee\Persistor\Pdo</a></code>
 			
 			</code>
 		</td>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_setOptions">#</a>
-		<code><a href="source-class-Qutee.Persistor.Redis.html#39-50" title="Go to source code">setOptions</a>( <span>array <var>$options</var></span> )</code>
+		<code><a href="source-class-Qutee.Persistor.Pdo.html#53-64" title="Go to source code">setOptions</a>( <span>array <var>$options</var></span> )</code>
 
 		<div class="description short">
 			
@@ -192,7 +228,7 @@
 
 				<h4>Returns</h4>
 				<div class="list">
-					<code><code><a href="class-Qutee.Persistor.Redis.html">Qutee\Persistor\Redis</a></code></code><br />
+					<code><code><a href="class-Qutee.Persistor.Pdo.html">Qutee\Persistor\Pdo</a></code></code><br />
 				</div>
 
 
@@ -207,25 +243,21 @@
 
 		<td class="attributes"><code>
 			 public 
-			<code><a href="class-Qutee.Persistor.Redis.html">Qutee\Persistor\Redis</a></code>
+			<code><a href="class-Qutee.Persistor.Pdo.html">Qutee\Persistor\Pdo</a></code>
 			
 			</code>
 		</td>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_addTask">#</a>
-		<code><a href="source-class-Qutee.Persistor.Redis.html#52-81" title="Go to source code">addTask</a>( <span><code><a href="class-Qutee.Task.html">Qutee\Task</a></code> <var>$task</var></span> )</code>
+		<code><a href="source-class-Qutee.Persistor.Pdo.html#66-99" title="Go to source code">addTask</a>( <span><code><a href="class-Qutee.Task.html">Qutee\Task</a></code> <var>$task</var></span> )</code>
 
 		<div class="description short">
 			
-<p>Add task to queue</p>
-
 		</div>
 
 		<div class="description detailed hidden">
 			
-<p>Add task to queue</p>
-
 
 
 				<h4>Parameters</h4>
@@ -236,7 +268,7 @@
 
 				<h4>Returns</h4>
 				<div class="list">
-					<code><code><a href="class-Qutee.Persistor.Redis.html">Qutee\Persistor\Redis</a></code></code><br />
+					<code><code><a href="class-Qutee.Persistor.Pdo.html">Qutee\Persistor\Pdo</a></code></code><br />
 				</div>
 
 
@@ -258,7 +290,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_getTask">#</a>
-		<code><a href="source-class-Qutee.Persistor.Redis.html#83-112" title="Go to source code">getTask</a>( <span>integer <var>$priority</var> = <span class="php-keyword1">null</span></span> )</code>
+		<code><a href="source-class-Qutee.Persistor.Pdo.html#101-143" title="Go to source code">getTask</a>( <span>integer <var>$priority</var> = <span class="php-keyword1">null</span></span> )</code>
 
 		<div class="description short">
 			
@@ -291,14 +323,14 @@
 
 		<td class="attributes"><code>
 			 public 
-			array
+			<code><a href="class-Qutee.Task.html">Qutee\Task</a>[]</code>
 			
 			</code>
 		</td>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_getTasks">#</a>
-		<code><a href="source-class-Qutee.Persistor.Redis.html#114-142" title="Go to source code">getTasks</a>( <span>integer <var>$priority</var> = <span class="php-keyword1">null</span></span> )</code>
+		<code><a href="source-class-Qutee.Persistor.Pdo.html#145-170" title="Go to source code">getTasks</a>( <span>integer <var>$priority</var> = <span class="php-keyword1">null</span></span> )</code>
 
 		<div class="description short">
 			
@@ -316,7 +348,7 @@
 
 				<h4>Returns</h4>
 				<div class="list">
-					<code>array</code><br />
+					<code><code><a href="class-Qutee.Task.html">Qutee\Task</a>[]</code></code><br />
 				</div>
 
 
@@ -338,17 +370,17 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_clear">#</a>
-		<code><a href="source-class-Qutee.Persistor.Redis.html#145-153" title="Go to source code">clear</a>( )</code>
+		<code><a href="source-class-Qutee.Persistor.Pdo.html#172-178" title="Go to source code">clear</a>( )</code>
 
 		<div class="description short">
 			
-<p>Clear queue</p>
+<p>Clear all tasks</p>
 
 		</div>
 
 		<div class="description detailed hidden">
 			
-<p>Clear queue</p>
+<p>Clear all tasks</p>
 
 
 
@@ -366,60 +398,18 @@
 		</div>
 		</div></td>
 	</tr>
-	<tr data-order="_createQueueName" id="__createQueueName">
+	<tr data-order="setPdo" id="_setPdo">
 
 		<td class="attributes"><code>
-			 protected 
-			string
+			 public 
+			<code><a href="class-Qutee.Persistor.Pdo.html">Qutee\Persistor\Pdo</a></code>
 			
 			</code>
 		</td>
 
 		<td class="name"><div>
-		<a class="anchor" href="#__createQueueName">#</a>
-		<code><a href="source-class-Qutee.Persistor.Redis.html#155-165" title="Go to source code">_createQueueName</a>( <span>integer <var>$priority</var></span> )</code>
-
-		<div class="description short">
-			
-<p>Create queue name, which is in fact a priority filter</p>
-
-		</div>
-
-		<div class="description detailed hidden">
-			
-<p>Create queue name, which is in fact a priority filter</p>
-
-
-
-				<h4>Parameters</h4>
-				<div class="list"><dl>
-					<dt><var>$priority</var></dt>
-					<dd><code>integer</code><br>$priority</dd>
-				</dl></div>
-
-				<h4>Returns</h4>
-				<div class="list">
-					<code>string</code><br />
-				</div>
-
-
-
-
-		</div>
-		</div></td>
-	</tr>
-	<tr data-order="_createKey" id="__createKey">
-
-		<td class="attributes"><code>
-			 protected 
-			string
-			
-			</code>
-		</td>
-
-		<td class="name"><div>
-		<a class="anchor" href="#__createKey">#</a>
-		<code><a href="source-class-Qutee.Persistor.Redis.html#167-182" title="Go to source code">_createKey</a>( <span><code><a href="class-Qutee.Task.html">Qutee\Task</a></code> <var>$task</var></span> )</code>
+		<a class="anchor" href="#_setPdo">#</a>
+		<code><a href="source-class-Qutee.Persistor.Pdo.html#180-190" title="Go to source code">setPdo</a>( <span>PDO <var>$pdo</var></span> )</code>
 
 		<div class="description short">
 			
@@ -431,13 +421,13 @@
 
 				<h4>Parameters</h4>
 				<div class="list"><dl>
-					<dt><var>$task</var></dt>
-					<dd><code><code><a href="class-Qutee.Task.html">Qutee\Task</a></code></code><br>$task</dd>
+					<dt><var>$pdo</var></dt>
+					<dd><code>PDO</code><br>$pdo</dd>
 				</dl></div>
 
 				<h4>Returns</h4>
 				<div class="list">
-					<code>string</code><br />
+					<code><code><a href="class-Qutee.Persistor.Pdo.html">Qutee\Persistor\Pdo</a></code></code><br />
 				</div>
 
 
@@ -446,18 +436,18 @@
 		</div>
 		</div></td>
 	</tr>
-	<tr data-order="_getRedis" id="__getRedis">
+	<tr data-order="_getPdo" id="__getPdo">
 
 		<td class="attributes"><code>
 			 protected 
-			Redis|Predis\Client
+			PDO
 			
 			</code>
 		</td>
 
 		<td class="name"><div>
-		<a class="anchor" href="#__getRedis">#</a>
-		<code><a href="source-class-Qutee.Persistor.Redis.html#184-225" title="Go to source code">_getRedis</a>( )</code>
+		<a class="anchor" href="#__getPdo">#</a>
+		<code><a href="source-class-Qutee.Persistor.Pdo.html#192-213" title="Go to source code">_getPdo</a>( )</code>
 
 		<div class="description short">
 			
@@ -470,13 +460,47 @@
 
 				<h4>Returns</h4>
 				<div class="list">
-					<code>Redis|Predis\Client</code><br />
+					<code>PDO</code><br />
 				</div>
 
-				<h4>Throws</h4>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="_hasTaskByUniqueId" id="__hasTaskByUniqueId">
+
+		<td class="attributes"><code>
+			 protected 
+			boolean
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#__hasTaskByUniqueId">#</a>
+		<code><a href="source-class-Qutee.Persistor.Pdo.html#215-228" title="Go to source code">_hasTaskByUniqueId</a>( <span>string <var>$uniqueId</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$uniqueId</var></dt>
+					<dd><code>string</code><br>$uniqueId</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
 				<div class="list">
-					<code>RuntimeException</code><br />
+					<code>boolean</code><br />
 				</div>
+
 
 
 
@@ -492,33 +516,6 @@
 
 
 
-	<table class="summary" id="constants">
-	<caption>Constants summary</caption>
-	<tr data-order="DEFAULT_PREFIX" id="DEFAULT_PREFIX">
-
-		<td class="attributes"><code>string</code></td>
-		<td class="name"><code>
-				<a href="source-class-Qutee.Persistor.Redis.html#13-16" title="Go to source code"><b>DEFAULT_PREFIX</b></a>
-		</code></td>
-		<td class="value"><code><span class="php-quote">'qutee:'</span></code></td>
-		<td class="description"><div>
-			<a href="#DEFAULT_PREFIX" class="anchor">#</a>
-
-			<div class="description short">
-				
-<p>Default name for Redis key (queue name)</p>
-
-			</div>
-
-			<div class="description detailed hidden">
-				
-<p>Default name for Redis key (queue name)</p>
-
-
-			</div>
-		</div></td>
-	</tr>
-	</table>
 
 
 
@@ -532,7 +529,7 @@
 		</code></td>
 
 		<td class="name">
-				<a href="source-class-Qutee.Persistor.Redis.html#18-22" title="Go to source code"><var>$_options</var></a>
+				<a href="source-class-Qutee.Persistor.Pdo.html#28-32" title="Go to source code"><var>$_options</var></a>
 		</td>
 		<td class="value"><code><span class="php-keyword1">array</span>()</code></td>
 		<td class="description"><div>
@@ -548,18 +545,18 @@
 			</div>
 		</div></td>
 	</tr>
-	<tr data-order="_redis" id="$_redis">
+	<tr data-order="_pdo" id="$_pdo">
 		<td class="attributes"><code>
 			private  
-			Redis
+			PDO
 		</code></td>
 
 		<td class="name">
-				<a href="source-class-Qutee.Persistor.Redis.html#24-28" title="Go to source code"><var>$_redis</var></a>
+				<a href="source-class-Qutee.Persistor.Pdo.html#34-38" title="Go to source code"><var>$_pdo</var></a>
 		</td>
 		<td class="value"><code></code></td>
 		<td class="description"><div>
-			<a href="#$_redis" class="anchor">#</a>
+			<a href="#$_pdo" class="anchor">#</a>
 
 			<div class="description short">
 				
