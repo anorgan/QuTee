@@ -80,6 +80,7 @@ while (true) {
         echo 'Error: '. $e->getMessage() . PHP_EOL;
     }
 }
+```
 
 Disclaimer
 ----------
