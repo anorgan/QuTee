@@ -82,11 +82,10 @@ while (true) {
 }
 ```
 
-Disclaimer
+Notes
 ----------
 
 - Use [supervisord](http://supervisord.org/) or similar for process monitoring / babysitting
-- Extremely simple, but pretends to simplify background jobs processing
 
 [TODO](https://github.com/anorgan/QuTee/issues?milestone=1&state=open)
 ----
