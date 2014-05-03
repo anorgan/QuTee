@@ -18,6 +18,9 @@ class Worker
      * Run every 5 seconds by default
      */
     const DEFAULT_INTERVAL = 5;
+    
+    const EVENT_START_PROCESSING_TASK = 'qutee.worker.start_processing_task';
+    const EVENT_END_PROCESSING_TASK = 'qutee.worker.end_processing_task';
 
     /**
      * Run every X seconds
@@ -143,7 +146,19 @@ class Worker
             return;
         }
 
+        $event = new Event($this);
+        $event->setArgument('startTime', $this->_startTime);
+        $event->setTask($task);
+        
+        $this->getQueue()->getEventDispatcher()->dispatch(self::EVENT_START_PROCESSING_TASK, $event);
+        
         $this->_runTask($task);
+        
+        $event = new Event($this);
+        $event->setArgument('elapsedTime', $this->_getPassedTime());
+        $event->setTask($task);
+        
+        $this->getQueue()->getEventDispatcher()->dispatch(self::EVENT_END_PROCESSING_TASK, $event);
 
         // After working, sleep
         $this->_sleep();

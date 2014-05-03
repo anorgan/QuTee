@@ -11,12 +11,21 @@ use Qutee\Task;
  */
 class Queue
 {
+    const EVENT_ADD_TASK = 'qutee.queue.add_task';
+    const EVENT_CLEAR_ALL_TASKS = 'qutee.queue.clear_all_tasks';
+
     /**
      *
      * @var \Qutee\Persistor\PersistorInterface
      */
     protected $_persistor;
 
+    /**
+     *
+     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+     */
+    protected $_eventDispatcher;
+    
     /**
      *
      * @var \Qutee\Queue
@@ -26,6 +35,30 @@ class Queue
     public function __construct()
     {
         self::$_instance = $this;
+    }
+
+    /**
+     * 
+     * @return \Symfony\Component\EventDispatcher\EventDispatcherInterface
+     */
+    public function getEventDispatcher()
+    {
+        if (null === $this->_eventDispatcher) {
+            $this->_eventDispatcher = new \Symfony\Component\EventDispatcher\EventDispatcher;
+        }
+        return $this->_eventDispatcher;
+    }
+
+    /**
+     * 
+     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
+     * 
+     * @return \Qutee\Queue
+     */
+    public function setEventDispatcher(\Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher)
+    {
+        $this->_eventDispatcher = $eventDispatcher;
+        return $this;
     }
 
     /**
@@ -59,6 +92,11 @@ class Queue
     public function addTask(Task $task)
     {
         $this->getPersistor()->addTask($task);
+        
+        $event = new Event($this);
+        $event->setTask($task);
+        
+        $this->getEventDispatcher()->dispatch(self::EVENT_ADD_TASK, $event);
 
         return $this;
     }
@@ -92,7 +130,15 @@ class Queue
      */
     public function clear()
     {
-        return $this->getPersistor()->clear();
+        if ($this->getPersistor()->clear()) {
+
+            $event = new Event($this);
+
+            $this->getEventDispatcher()->dispatch(self::EVENT_CLEAR_ALL_TASKS, $event);
+            return true;
+        }
+        
+        return false;
     }
 
     /**
