@@ -92,7 +92,7 @@ class Queue
     public function addTask(Task $task)
     {
         $this->getPersistor()->addTask($task);
-        
+
         $event = new Event($this);
         $event->setTask($task);
         

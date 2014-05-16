@@ -2,6 +2,10 @@
 
 namespace Qutee\Persistor;
 
+use Pheanstalk\Pheanstalk;
+use Pheanstalk\PheanstalkInterface;
+use Qutee\Task;
+
 /**
  * Beanstalk
  *
@@ -9,6 +13,8 @@ namespace Qutee\Persistor;
  */
 class Beanstalk implements PersistorInterface
 {
+
+    const TUBE_NAME = 'qutee';
 
     /**
      *
@@ -18,7 +24,7 @@ class Beanstalk implements PersistorInterface
 
     /**
      *
-     * @var \Pheanstalk\Pheanstalk
+     * @var Pheanstalk
      */
     private $_client;
 
@@ -47,17 +53,15 @@ class Beanstalk implements PersistorInterface
     /**
      * Add task to queue
      *
-     * @param \Qutee\Task $task
+     * @param Task $task
      *
      * @return \Qutee\Persistor\Beanstalk
      */
-    public function addTask(\Qutee\Task $task)
+    public function addTask(Task $task)
     {
-        $queue = $this->_createQueueName($task->getPriority());
-
         // Add task to queue
         $data = serialize($task);
-        $this->_getClient()->putInTube($queue, $data, $task->getPriority());
+        $this->_getClient()->putInTube(self::TUBE_NAME, $data, $this->_convertPriority($task->getPriority()));
 
         return $this;
     }
@@ -66,24 +70,25 @@ class Beanstalk implements PersistorInterface
      *
      * @param int $priority
      *
-     * @return \Qutee\Task|null
+     * @return Task|null
      */
     public function getTask($priority = null)
     {
-        if (null !== $priority) {
-            // Get only the requested priority queue
-            $queue  = (array) $this->_createQueueName($priority);
-            $data   = $this->_getClient()->reserveFromTube($queue, 10);
-        } else {
-            // Get all queues
-            $data   = $this->_getClient()->reserve(10);
-        }
+        $data   = $this->_getClient()->reserveFromTube(self::TUBE_NAME, 10);
 
         if (empty($data)) {
             return null;
         }
 
+        /* @var $task Task */
         $task = unserialize($data->getData());
+
+        if (null !== $priority && $task->getPriority() !== $priority) {
+            // These is not the task you are looking for :)
+            $this->_getClient()->release($data);
+
+            return null;
+        }
 
         $this->_getClient()->delete($data);
 
@@ -108,24 +113,14 @@ class Beanstalk implements PersistorInterface
      */
     public function clear()
     {
-        throw new \BadMethodCallException('Method not supported for Beanstalk persistor');
-    }
-
-    /**
-     * Create queue name, which is in fact a tube
-     *
-     * @param int $priority
-     *
-     * @return string
-     */
-    protected function _createQueueName($priority)
-    {
-        return 'queue/priority_'. $priority;
+        while ($job = $this->_getClient()->peekReady(self::TUBE_NAME)) {
+            $this->_getClient()->delete($job);
+        }
     }
 
     /**
      *
-     * @return \Pheanstalk\Pheanstalk
+     * @return Pheanstalk
      *
      * @throws \RuntimeException
      */
@@ -134,13 +129,43 @@ class Beanstalk implements PersistorInterface
         if (null === $this->_client) {
             
             $host = isset($this->_options['host']) ? $this->_options['host'] : '127.0.0.1';
-            $port = isset($this->_options['port']) ? $this->_options['port'] : 6379;
+            $port = isset($this->_options['port']) ? $this->_options['port'] : 11300;
             $connectTimeout = isset($this->_options['connect_timeout']) ? $this->_options['connect_timeout'] : null;
 
-            $this->_client = new \Pheanstalk\Pheanstalk($host, $port, $connectTimeout);
+            $this->_client = new Pheanstalk($host, $port, $connectTimeout);
         }
 
         return $this->_client;
     }
 
+    /**
+     * QuTee - Higher the number, higher the priority; 
+     * Beanstalkd - Lower the number, higher the priority
+     * 
+     * @param int $priority
+     * 
+     * @return int
+     */    
+    protected function _convertPriority($priority)
+    {
+        if (!is_numeric($priority)) {
+            throw new \Exeption('Error while converting priority, agrument is '
+                    . 'not a number, '. gettype($priority) .' sent');
+        }
+
+        switch ($priority) {
+            case Task::PRIORITY_LOW:
+                // Least urgent Beanstalkd priority
+                return 4294967295;
+                
+            case Task::PRIORITY_NORMAL:
+                return PheanstalkInterface::DEFAULT_PRIORITY;
+
+            case Task::PRIORITY_HIGH:
+                return 1024;
+
+            default:
+                return 512;
+        }
+    }
 }
