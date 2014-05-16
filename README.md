@@ -2,9 +2,9 @@ QuTee
 =====
 
 [![Build Status](https://travis-ci.org/anorgan/QuTee.png)](https://travis-ci.org/anorgan/QuTee)
-[![Coverage Status](https://coveralls.io/repos/anorgan/QuTee/badge.png)](https://coveralls.io/r/anorgan/QuTee)
+[![Code Coverage](https://scrutinizer-ci.com/g/anorgan/QuTee/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/anorgan/QuTee/?branch=master)
 
-Simple queue manager and task processor for PHP using Redis or MySQL as backend.
+Simple queue manager and task processor for PHP using Beanstalkd, Redis or MySQL as backend. Event interface is provided for your logging or statsd-ing needs.
 
 Example
 -------
@@ -13,11 +13,21 @@ Example
 /*
  * Bootstrap / DIC
  */
+$beanstalkdParams    = array(
+    'host'  => '127.0.0.1',
+    'port'  => 11300
+);
+$queuePersistor = new Qutee\Persistor\Beanstalk();
+$queuePersistor->setOptions($beanstalkdParams);
+
+// or...
+
 $redisParams    = array(
     'host'  => '127.0.0.1',
     'port'  => 6379
 );
-$queuePersistor = new Qutee\Persistor\Redis($redisParams);
+$queuePersistor = new Qutee\Persistor\Redis();
+$queuePersistor->setOptions($redisParams);
 
 // or...
 
@@ -82,6 +92,63 @@ while (true) {
     }
 }
 ```
+    
+Logging example
+---------------
+
+``` php
+// Initialize queue with persistor
+$queue          = new Qutee\Queue();
+
+// Setup the dispatcher, and register your subscriber
+$dispatcher = new Symfony\Component\EventDispatcher\EventDispatcher;
+$dispatcher->addSubscriber(new QuteeEventSubscriber());
+$queue->setEventDispatcher($dispatcher);
+
+// The subscriber:
+class QuteeEventSubscriber implements \Symfony\Component\EventDispatcher\EventSubscriberInterface
+{
+    public static function getSubscribedEvents()
+    {
+        return array(
+            \Qutee\Queue::EVENT_ADD_TASK => array(
+                'addTask',
+                0
+            ),
+            \Qutee\Worker::EVENT_START_PROCESSING_TASK => array(
+                'processTask',
+                0
+            ),
+            \Qutee\Worker::EVENT_END_PROCESSING_TASK => array(
+                'processTaskEnd',
+                0
+            ),
+        );
+    }
+    
+    public function addTask(Qutee\Event $event)
+    {
+        $this->log('Added task: '. $event->getTask()->getName());
+    }
+    
+    public function processTask(Qutee\Event $event)
+    {
+        $this->log('Processing task '. $event->getTask()->getName() .' started');
+    }
+    
+    public function processTaskEnd(Qutee\Event $event)
+    {
+        $this->log('Processing task '. $event->getTask()->getName() .' finished, lasted '. ($event->getArgument('elapsedTime') / 1000) .' seconds');
+    }
+    
+    protected function log($message)
+    {
+        file_put_contents(__DIR__ .'/events.log', $message . PHP_EOL, FILE_APPEND);
+    }
+
+}
+
+```
 
 Notes
 ----------
@@ -89,7 +156,3 @@ Notes
 - Use [supervisord](http://supervisord.org/) or similar for process monitoring / babysitting
 
 [TODO](https://github.com/anorgan/QuTee/issues?milestone=1&state=open)
-----
-- Add queue persistor using more adapters (Beanstalkd, MongoDB)
-- Add logging
-- Add reporting dashboard

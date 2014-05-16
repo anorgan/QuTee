@@ -7,7 +7,7 @@
 	<title>Class Qutee\Queue | Qutee</title>
 
 	<script type="text/javascript" src="resources/combined.js?2275062581"></script>
-	<script type="text/javascript" src="elementlist.js?2637421679"></script>
+	<script type="text/javascript" src="elementlist.js?3220239852"></script>
 	<link rel="stylesheet" type="text/css" media="all" href="resources/style.css?3505392360" />
 
 </head>
@@ -35,6 +35,7 @@
 		<div id="elements">
 			<h3>Classes</h3>
 			<ul>
+				<li><a href="class-Qutee.Event.html">Event</a></li>
 				<li class="active"><a href="class-Qutee.Queue.html">Queue</a></li>
 				<li><a href="class-Qutee.Task.html">Task</a></li>
 				<li><a href="class-Qutee.Worker.html">Worker</a></li>
@@ -116,7 +117,7 @@
 
 				<b>Author:</b>
 				anorgan<br />
-		<b>Located at</b> <a href="source-class-Qutee.Queue.html#7-155" title="Go to source code">src/Qutee/Queue.php</a><br />
+		<b>Located at</b> <a href="source-class-Qutee.Queue.html#7-201" title="Go to source code">src/Qutee/Queue.php</a><br />
 	</div>
 
 
@@ -134,7 +135,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#___construct">#</a>
-		<code><a href="source-class-Qutee.Queue.html#26-29" title="Go to source code">__construct</a>( )</code>
+		<code><a href="source-class-Qutee.Queue.html#35-38" title="Go to source code">__construct</a>( )</code>
 
 		<div class="description short">
 			
@@ -145,6 +146,77 @@
 
 
 
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getEventDispatcher" id="_getEventDispatcher">
+
+		<td class="attributes"><code>
+			 public 
+			Symfony\Component\EventDispatcher\EventDispatcherInterface
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getEventDispatcher">#</a>
+		<code><a href="source-class-Qutee.Queue.html#40-50" title="Go to source code">getEventDispatcher</a>( )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>Symfony\Component\EventDispatcher\EventDispatcherInterface</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="setEventDispatcher" id="_setEventDispatcher">
+
+		<td class="attributes"><code>
+			 public 
+			<code><a href="class-Qutee.Queue.html">Qutee\Queue</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_setEventDispatcher">#</a>
+		<code><a href="source-class-Qutee.Queue.html#52-62" title="Go to source code">setEventDispatcher</a>( <span>Symfony\Component\EventDispatcher\EventDispatcherInterface <var>$eventDispatcher</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$eventDispatcher</var></dt>
+					<dd><code>Symfony\Component\EventDispatcher\EventDispatcherInterface</code><br>$eventDispatcher</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><code><a href="class-Qutee.Queue.html">Qutee\Queue</a></code></code><br />
+				</div>
 
 
 
@@ -163,7 +235,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_getPersistor">#</a>
-		<code><a href="source-class-Qutee.Queue.html#31-38" title="Go to source code">getPersistor</a>( )</code>
+		<code><a href="source-class-Qutee.Queue.html#64-71" title="Go to source code">getPersistor</a>( )</code>
 
 		<div class="description short">
 			
@@ -196,7 +268,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_setPersistor">#</a>
-		<code><a href="source-class-Qutee.Queue.html#40-51" title="Go to source code">setPersistor</a>( <span><code><a href="class-Qutee.Persistor.PersistorInterface.html">Qutee\Persistor\PersistorInterface</a></code> <var>$persistor</var></span> )</code>
+		<code><a href="source-class-Qutee.Queue.html#73-84" title="Go to source code">setPersistor</a>( <span><code><a href="class-Qutee.Persistor.PersistorInterface.html">Qutee\Persistor\PersistorInterface</a></code> <var>$persistor</var></span> )</code>
 
 		<div class="description short">
 			
@@ -234,7 +306,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_addTask">#</a>
-		<code><a href="source-class-Qutee.Queue.html#53-64" title="Go to source code">addTask</a>( <span><code><a href="class-Qutee.Task.html">Qutee\Task</a></code> <var>$task</var></span> )</code>
+		<code><a href="source-class-Qutee.Queue.html#86-102" title="Go to source code">addTask</a>( <span><code><a href="class-Qutee.Task.html">Qutee\Task</a></code> <var>$task</var></span> )</code>
 
 		<div class="description short">
 			
@@ -272,7 +344,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_getTask">#</a>
-		<code><a href="source-class-Qutee.Queue.html#66-75" title="Go to source code">getTask</a>( <span>integer <var>$priority</var> = <span class="php-keyword1">null</span></span> )</code>
+		<code><a href="source-class-Qutee.Queue.html#104-113" title="Go to source code">getTask</a>( <span>integer <var>$priority</var> = <span class="php-keyword1">null</span></span> )</code>
 
 		<div class="description short">
 			
@@ -310,7 +382,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_getTasks">#</a>
-		<code><a href="source-class-Qutee.Queue.html#77-86" title="Go to source code">getTasks</a>( <span>integer <var>$priority</var> = <span class="php-keyword1">null</span></span> )</code>
+		<code><a href="source-class-Qutee.Queue.html#115-124" title="Go to source code">getTasks</a>( <span>integer <var>$priority</var> = <span class="php-keyword1">null</span></span> )</code>
 
 		<div class="description short">
 			
@@ -348,7 +420,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_clear">#</a>
-		<code><a href="source-class-Qutee.Queue.html#88-96" title="Go to source code">clear</a>( )</code>
+		<code><a href="source-class-Qutee.Queue.html#126-142" title="Go to source code">clear</a>( )</code>
 
 		<div class="description short">
 			
@@ -385,7 +457,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_factory">#</a>
-		<code><a href="source-class-Qutee.Queue.html#98-136" title="Go to source code">factory</a>( <span>array <var>$config</var> = <span class="php-keyword1">array</span>()</span> )</code>
+		<code><a href="source-class-Qutee.Queue.html#144-182" title="Go to source code">factory</a>( <span>array <var>$config</var> = <span class="php-keyword1">array</span>()</span> )</code>
 
 		<div class="description short">
 			
@@ -432,7 +504,7 @@ for the persistor</dd>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_setInstance">#</a>
-		<code><a href="source-class-Qutee.Queue.html#138-141" title="Go to source code">setInstance</a>( <span>mixed <var>$instance</var></span> )</code>
+		<code><a href="source-class-Qutee.Queue.html#184-187" title="Go to source code">setInstance</a>( <span>mixed <var>$instance</var></span> )</code>
 
 		<div class="description short">
 			
@@ -461,7 +533,7 @@ for the persistor</dd>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_get">#</a>
-		<code><a href="source-class-Qutee.Queue.html#143-154" title="Go to source code">get</a>( )</code>
+		<code><a href="source-class-Qutee.Queue.html#189-200" title="Go to source code">get</a>( )</code>
 
 		<div class="description short">
 			
@@ -492,6 +564,49 @@ for the persistor</dd>
 
 
 
+	<table class="summary" id="constants">
+	<caption>Constants summary</caption>
+	<tr data-order="EVENT_ADD_TASK" id="EVENT_ADD_TASK">
+
+		<td class="attributes"><code>string</code></td>
+		<td class="name"><code>
+				<a href="source-class-Qutee.Queue.html#14" title="Go to source code"><b>EVENT_ADD_TASK</b></a>
+		</code></td>
+		<td class="value"><code><span class="php-quote">'qutee.queue.add_task'</span></code></td>
+		<td class="description"><div>
+			<a href="#EVENT_ADD_TASK" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	<tr data-order="EVENT_CLEAR_ALL_TASKS" id="EVENT_CLEAR_ALL_TASKS">
+
+		<td class="attributes"><code>string</code></td>
+		<td class="name"><code>
+				<a href="source-class-Qutee.Queue.html#15" title="Go to source code"><b>EVENT_CLEAR_ALL_TASKS</b></a>
+		</code></td>
+		<td class="value"><code><span class="php-quote">'qutee.queue.clear_all_tasks'</span></code></td>
+		<td class="description"><div>
+			<a href="#EVENT_CLEAR_ALL_TASKS" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	</table>
 
 
 
@@ -505,11 +620,34 @@ for the persistor</dd>
 		</code></td>
 
 		<td class="name">
-				<a href="source-class-Qutee.Queue.html#14-18" title="Go to source code"><var>$_persistor</var></a>
+				<a href="source-class-Qutee.Queue.html#17-21" title="Go to source code"><var>$_persistor</var></a>
 		</td>
 		<td class="value"><code></code></td>
 		<td class="description"><div>
 			<a href="#$_persistor" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	<tr data-order="_eventDispatcher" id="$_eventDispatcher">
+		<td class="attributes"><code>
+			protected  
+			Symfony\Component\EventDispatcher\EventDispatcherInterface
+		</code></td>
+
+		<td class="name">
+				<a href="source-class-Qutee.Queue.html#23-27" title="Go to source code"><var>$_eventDispatcher</var></a>
+		</td>
+		<td class="value"><code></code></td>
+		<td class="description"><div>
+			<a href="#$_eventDispatcher" class="anchor">#</a>
 
 			<div class="description short">
 				
@@ -528,7 +666,7 @@ for the persistor</dd>
 		</code></td>
 
 		<td class="name">
-				<a href="source-class-Qutee.Queue.html#20-24" title="Go to source code"><var>$_instance</var></a>
+				<a href="source-class-Qutee.Queue.html#29-33" title="Go to source code"><var>$_instance</var></a>
 		</td>
 		<td class="value"><code></code></td>
 		<td class="description"><div>

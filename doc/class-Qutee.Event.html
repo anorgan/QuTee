@@ -4,7 +4,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="generator" content="ApiGen 2.8.0" />
 
-	<title>Class Qutee\Exception | Qutee</title>
+	<title>Class Qutee\Event | Qutee</title>
 
 	<script type="text/javascript" src="resources/combined.js?2275062581"></script>
 	<script type="text/javascript" src="elementlist.js?3220239852"></script>
@@ -35,7 +35,7 @@
 		<div id="elements">
 			<h3>Classes</h3>
 			<ul>
-				<li><a href="class-Qutee.Event.html">Event</a></li>
+				<li class="active"><a href="class-Qutee.Event.html">Event</a></li>
 				<li><a href="class-Qutee.Queue.html">Queue</a></li>
 				<li><a href="class-Qutee.Task.html">Task</a></li>
 				<li><a href="class-Qutee.Worker.html">Worker</a></li>
@@ -49,7 +49,7 @@
 
 			<h3>Exceptions</h3>
 			<ul>
-				<li class="active"><a href="class-Qutee.Exception.html">Exception</a></li>
+				<li><a href="class-Qutee.Exception.html">Exception</a></li>
 			</ul>
 
 
@@ -92,24 +92,24 @@
 	</div>
 
 <div id="content" class="class">
-	<h1>Class Exception</h1>
+	<h1>Class Event</h1>
 
 
 	<div class="description">
 	
-<p>Exception</p>
+<p>Description of Event</p>
 
 	</div>
 
 	<dl class="tree">
 		<dd style="padding-left:0px">
-Exception
+Symfony\Component\EventDispatcher\GenericEvent
 			
 			
 		</dd>
 		<dd style="padding-left:30px">
 			<img src="resources/inherit.png" alt="Extended by" />
-<b><span>Qutee\Exception</span></b>			
+<b><span>Qutee\Event</span></b>			
 			
 			
 		</dd>
@@ -130,26 +130,83 @@ Exception
 
 				<b>Author:</b>
 				anorgan<br />
-		<b>Located at</b> <a href="source-class-Qutee.Exception.html#5-13" title="Go to source code">src/Qutee/Exception.php</a><br />
+		<b>Located at</b> <a href="source-class-Qutee.Event.html#7-43" title="Go to source code">src/Qutee/Event.php</a><br />
 	</div>
 
 
 
+	<table class="summary" id="methods">
+	<caption>Methods summary</caption>
+	<tr data-order="getTask" id="_getTask">
 
-	<table class="summary inherited">
-	<caption>Methods inherited from Exception</caption>
-	<tr>
-		<td><code>
-__construct(), 
-__toString(), 
-getCode(), 
-getFile(), 
-getLine(), 
-getMessage(), 
-getPrevious(), 
-getTrace(), 
-getTraceAsString()
-		</code></td>
+		<td class="attributes"><code>
+			 public 
+			<code><a href="class-Qutee.Task.html">Qutee\Task</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getTask">#</a>
+		<code><a href="source-class-Qutee.Event.html#21-28" title="Go to source code">getTask</a>( )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><code><a href="class-Qutee.Task.html">Qutee\Task</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="setTask" id="_setTask">
+
+		<td class="attributes"><code>
+			 public 
+			<code><a href="class-Qutee.Event.html">Qutee\Event</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_setTask">#</a>
+		<code><a href="source-class-Qutee.Event.html#30-41" title="Go to source code">setTask</a>( <span><code><a href="class-Qutee.Task.html">Qutee\Task</a></code> <var>$task</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$task</var></dt>
+					<dd><code><code><a href="class-Qutee.Task.html">Qutee\Task</a></code></code><br>$task</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><code><a href="class-Qutee.Event.html">Qutee\Event</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
 	</tr>
 	</table>
 
@@ -164,17 +221,33 @@ getTraceAsString()
 
 
 
-	<table class="summary inherited">
-	<caption>Properties inherited from Exception</caption>
-	<tr>
-		<td><code>
-<var>$code</var>, 
-<var>$file</var>, 
-<var>$line</var>, 
-<var>$message</var>
+	<table class="summary" id="properties">
+	<caption>Properties summary</caption>
+	<tr data-order="task" id="$task">
+		<td class="attributes"><code>
+			protected  
+			<code><a href="class-Qutee.Task.html">Qutee\Task</a></code>
 		</code></td>
+
+		<td class="name">
+				<a href="source-class-Qutee.Event.html#15-19" title="Go to source code"><var>$task</var></a>
+		</td>
+		<td class="value"><code></code></td>
+		<td class="description"><div>
+			<a href="#$task" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
 	</tr>
 	</table>
+
 
 
 
