@@ -2,6 +2,7 @@ QuTee
 =====
 
 [![Build Status](https://travis-ci.org/anorgan/QuTee.png)](https://travis-ci.org/anorgan/QuTee)
+[![Coverage Status](https://coveralls.io/repos/anorgan/QuTee/badge.png)](https://coveralls.io/r/anorgan/QuTee)
 
 Simple queue manager and task processor for PHP using Redis or MySQL as backend.
 
