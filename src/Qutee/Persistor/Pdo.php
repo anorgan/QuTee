@@ -140,6 +140,10 @@ class Pdo implements PersistorInterface
         }
 
         $statement->execute($array);
+        if ($statement->rowCount() === 0) {
+            // No tasks
+            return null;
+        }
 
         // Now, get that task
         $statement  = $this->_getPdo()->prepare(sprintf('SELECT * FROM %s WHERE id = @ID', $this->_options['table_name']));
