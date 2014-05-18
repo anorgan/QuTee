@@ -36,8 +36,19 @@ class Pdo implements PersistorInterface
      * @var \PDO
      */
     private $_pdo;
+    
+    /**
+     *
+     * @var int
+     */
+    private static $_reconnects = 3;
 
-    public function __construct(\PDO $pdo = null) {
+    /**
+     * 
+     * @param \PDO $pdo
+     */
+    public function __construct(\PDO $pdo = null)
+    {
         $this->_pdo = $pdo;
     }
 
@@ -200,16 +211,49 @@ class Pdo implements PersistorInterface
             $username   = $this->_options['username'];
             $password   = $this->_options['password'];
 
-            $options    = array(\PDO::ATTR_EMULATE_PREPARES => false, \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION);
+            $options    = array(
+                \PDO::ATTR_EMULATE_PREPARES     => false, 
+                \PDO::ATTR_ERRMODE              => \PDO::ERRMODE_EXCEPTION,
+                \PDO::ATTR_DEFAULT_FETCH_MODE   => \PDO::FETCH_ASSOC
+            );
 
             if (isset($this->_options['options'])) {
                 $options = $this->_options['options'] + $options;
             }
 
             $this->_pdo = new \PDO($dsn, $username, $password, $options);
-        }            
+        } else {
+            $this->_testConnection($this->_pdo);
+        }
 
         return $this->_pdo;
+    }
+    
+    /**
+     * Test connection, reconnect if needed
+     *
+     * @param \PDO $pdo
+     *
+     * @throws \Qutee\Persistor\PDOException
+     */
+    protected function _testConnection(\PDO $pdo)
+    {
+        try {
+            // Dummy query
+            $pdo->query('SELECT 1');
+        } catch (\PDOException $e) {
+            // Mysql server has gone away or similar error
+            self::$_reconnects--;
+
+            if (self::$_reconnects <= 0) {
+                // No more tests, throw error, reinstate reconnects
+                self::$_reconnects = 3;
+                throw $e;
+            }
+
+            $pdo = null;
+            $this->_getPdo();
+        }
     }
 
     /**
