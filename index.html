@@ -32,7 +32,7 @@
       <section>
         <div id="title">
           <h1>Qutee</h1>
-          <p>PHP Background Jobs (Tasks) Manager</p>
+          <p>PHP Background Jobs (Tasks) Manager using Beanstalkd, Redis or MySQL as backend. Event interface is provided for your logging or statsd-ing needs.</p>
           <hr>
           <span class="credits left">Project maintained by <a href="https://github.com/anorgan">anorgan</a></span>
           <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
@@ -91,19 +91,6 @@
 
 </pre></div>
 
-<h2>Disclaimer</h2>
-
-<ul>
-<li>Worker does not fork yet, could be highly unstable, use supervisord or similar</li>
-<li>Extremely simple, does not pretend to replace 0MQ, Gearman, Redis and such</li>
-</ul><h2><a href="https://github.com/anorgan/QuTee/issues?milestone=1&amp;state=open">TODO</a></h2>
-
-<ul>
-<li>Add queue persistor using adapters (DB, MongoDB, Memcache)</li>
-<li>Make worker spawn child processes for running tasks</li>
-<li>Add logging</li>
-<li>Add reporting dashboard</li>
-</ul>
       </section>
 
     </div>
