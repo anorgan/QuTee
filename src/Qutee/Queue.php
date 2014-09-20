@@ -65,6 +65,25 @@ class Queue
 
     /**
      *
+     * @param string $name
+     * @param array $data
+     * @param int $priority
+     * @param string $unique_id
+     * @param string $methodName
+     *
+     * @return Task
+     */
+    public static function createTask($name, $data = array(), $priority = Task::PRIORITY_NORMAL, $unique_id = null, $methodName = null)
+    {
+        $queue = Queue::get();
+        $task = new Task($name, $data, $priority, $unique_id, $methodName);
+        $queue->addTask($task);
+
+        return $task;
+    }
+
+    /**
+     *
      * @param int $priority
      *
      * @return \Qutee\Task
@@ -108,7 +127,7 @@ class Queue
     static public function factory($config = array())
     {
         if (isset($config['persistor'])) {
-            $persistorClass = 'Qutee\\Persistor\\'. ucfirst($config['persistor']);
+            $persistorClass = 'Qutee\\Persistor\\' . ucfirst($config['persistor']);
             if (class_exists($persistorClass)) {
                 $persistor = new $persistorClass;
             } elseif (class_exists($config['persistor'])) {
