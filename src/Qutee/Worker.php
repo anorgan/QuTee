@@ -206,23 +206,26 @@ class Worker
      */
     protected function _runTask(Task $task)
     {
-        $taskClassName  = $task->getClassName();
+        $taskClassName = $task->getClassName();
         if (!class_exists($taskClassName)) {
             throw new \InvalidArgumentException(sprintf('Task class "%s" not found', $taskClassName));
         }
 
-        $taskObject     = new $taskClassName;
+        $taskObject = new $taskClassName;
 
         if ($taskObject instanceof TaskInterface) {
 
             $taskObject->setData($task->getData());
             $taskObject->run();
-
         } else {
-
-            $methodName     = $task->getMethodName();
-            $taskObject->$methodName($task->getData());
-
+            $methodName = $task->getMethodName();
+            $data = $task->getData();
+            $methodChecker = new ReflectionMethod($taskClassName, $methodName);
+            if ($methodChecker->isStatic()) {
+                $taskClassName::$methodName($data);
+            } else {
+                $taskObject->$methodName($data);
+            }
         }
     }
 
