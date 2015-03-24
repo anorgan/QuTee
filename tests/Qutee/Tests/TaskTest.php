@@ -35,12 +35,20 @@ class TaskTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Exception
      * @covers \Qutee\Task::setData
      */
     public function testSettingDataThrowsInvalidArgumentException()
     {
-        $this->object->setData('string');
+        try {
+            $this->object->setData('string');
+        } catch(\Exception $e) {
+            if (version_compare(phpversion(), '5.4.0', '<')) {
+                $exceptionMessage = 'must be an array';
+            } else {
+                $exceptionMessage = 'must be of the type array';
+            }
+            $this->assertContains($exceptionMessage, $e->getMessage());
+        }
     }
 
     /**
