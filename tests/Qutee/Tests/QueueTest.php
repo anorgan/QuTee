@@ -78,12 +78,15 @@ class QueueTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Exception
      * @covers \Qutee\Queue::addTask
      */
     public function testAddingTaskUsingWrongArgumentThrowsException()
     {
-        $this->object->addTask(array('bad'));
+        try {
+            $this->object->addTask(array('bad'));
+        } catch(\Exception $e) {
+            $this->assertContains('must be an instance of Qutee\Task', $e->getMessage());
+        }
     }
 
     /**
