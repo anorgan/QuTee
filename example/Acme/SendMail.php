@@ -18,6 +18,7 @@ class SendMail implements TaskInterface
         $fp = fopen(__DIR__ .'/../mail.log', 'a');
         fwrite($fp, json_encode($this->_data, JSON_PRETTY_PRINT) . PHP_EOL);
         fclose($fp);
+
         return true;
     }
 
