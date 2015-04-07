@@ -1,43 +1,34 @@
 {
-  "name": "anorgan/qutee",
-  "type": "library",
-  "description": "Simple queue manager and task processor for PHP",
-  "keywords": [
-    "qutee",
-    "job",
-    "task",
-    "worker",
-    "background",
-    "queue",
-    "redis",
-    "mysql",
-    "beanstalkd"
-  ],
-  "homepage": "https://github.com/anorgan/qutee",
-  "authors": [
-    {
-      "name": "Marin Crnković",
-      "email": "marin.crnkovic@gmail.com"
+    "name": "anorgan/qutee",
+    "type": "library",
+    "description": "Simple queue manager and task processor for PHP",
+    "keywords": ["qutee", "job", "task", "worker", "background", "queue", "redis", "mysql", "beanstalkd"],
+    "homepage": "https://github.com/anorgan/qutee",
+    "authors": [
+        {"name": "Marin Crnković", "email": "marin.crnkovic@gmail.com"}
+    ],
+    "license": "LGPL-2.1+",
+
+    "minimum-stability": "dev",
+
+    "require": {
+        "php": ">=5.3.3",
+        "symfony/event-dispatcher": "~2.4"
     },
-    {
-      "name": "Marcel Araujo",
-      "email": "ceceldada@gmail.com"
+
+    "require-dev": {
+      "phpunit/phpunit": "~4.6"
+    },
+
+    "suggest": {
+        "pda/pheanstalk": "3.x-dev - for beanstalkd persistor",
+        "predis/predis": "Might be needed, depending on the chosen persistor (no need to compile phpredis)",
+        "ext-phpredis": "Might be needed, depending on the chosen persistor (faster than predis)"
+    },
+
+    "autoload": {
+        "psr-0": {
+            "Qutee": "src/"
+        }
     }
-  ],
-  "license": "LGPL-2.1+",
-  "require": {
-    "php": ">=5.3.3",
-    "symfony/event-dispatcher": "~2.6",
-    "phpunit/phpunit": "~4.5"
-  },
-  "suggest": {
-    "pda/pheanstalk": "3.x-dev - for beanstalkd persistor",
-    "predis/predis": "Might be needed, depending on the chosen persistor (no need to compile phpredis)",
-    "ext-phpredis": "Might be needed, depending on the chosen persistor (faster than predis)"
-  },
-  "autoload": {
-    "psr-0": {
-      "Qutee": "src/"
-    }
-  }
 }

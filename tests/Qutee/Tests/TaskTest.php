@@ -42,12 +42,7 @@ class TaskTest extends \PHPUnit_Framework_TestCase
         try {
             $this->object->setData('string');
         } catch(\Exception $e) {
-            if (version_compare(phpversion(), '5.4.0', '<')) {
-                $exceptionMessage = 'must be an array';
-            } else {
-                $exceptionMessage = 'must be of the type array';
-            }
-            $this->assertContains($exceptionMessage, $e->getMessage());
+            $this->assertContains('array, string given', $e->getMessage());
         }
     }
 

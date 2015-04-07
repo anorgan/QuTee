@@ -208,7 +208,6 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
          */
         $end = number_format($end, 4);
 
-        // Give it a margin error bigger because precision is a computer/plataform dependence
         $this->assertEquals(0.8337, $end, '', 0.01);
     }
 
