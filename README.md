@@ -2,7 +2,7 @@ QuTee
 =====
 
 [![Build Status](https://travis-ci.org/anorgan/QuTee.png)](https://travis-ci.org/anorgan/QuTee)
-[![Code Coverage](https://scrutinizer-ci.com/g/anorgan/QuTee/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/anorgan/QuTee/?branch=master)
+[![Coverage Status](https://coveralls.io/repos/anorgan/QuTee/badge.svg?branch=master)](https://coveralls.io/r/anorgan/QuTee?branch=master)
 
 Simple queue manager and task processor for PHP using Beanstalkd, Redis or MySQL as backend. Event interface is provided for your logging or statsd-ing needs.
 
