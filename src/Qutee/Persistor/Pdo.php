@@ -269,7 +269,7 @@ class Pdo implements PersistorInterface
     protected function _hasTaskByUniqueId($uniqueId)
     {
         $stmt = $this->_getPdo()
-            ->prepare(sprintf('SELECT id FROM %s WHERE unique_id = ?', $this->_options['table_name']));
+            ->prepare(sprintf('SELECT id FROM %s WHERE is_taken = 0 AND unique_id = ?', $this->_options['table_name']));
         $stmt->execute(array($uniqueId));
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         return !empty($rows);
