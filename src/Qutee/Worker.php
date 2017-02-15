@@ -143,6 +143,7 @@ class Worker
 
         // Get next task with set priority (or any task if priority not set)
         if (null === ($task = $this->getQueue()->getTask($this->getPriority()))) {
+            $this->_sleep();
             return;
         }
 
