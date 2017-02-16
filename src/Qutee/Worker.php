@@ -213,16 +213,16 @@ class Worker
         }
 
         $taskObject     = new $taskClassName;
-
+        $methodName     = $task->getMethodName();
+        
         if ($taskObject instanceof TaskInterface) {
 
             $taskObject->setData($task->getData());
-            $taskObject->run();
+            $taskObject->run($methodName);
             return $taskObject;
 
         } else {
 
-            $methodName     = $task->getMethodName();
             $taskObject->$methodName($task->getData());
 
         }
