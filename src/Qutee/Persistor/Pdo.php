@@ -240,7 +240,7 @@ class Pdo implements PersistorInterface
      *
      * @throws \Qutee\Persistor\PDOException
      */
-    protected function _testConnection(\PDO $pdo)
+    protected function _testConnection(\PDO &$pdo)
     {
         try {
             // Dummy query
